@@ -215,7 +215,7 @@ class DinoGame extends Phaser.Scene {
         // Fondo: montañas
         this.mountains = [];
         for (let i = 0; i < 3; i++) {
-            const m = this.add.image(Phaser.Math.Between(0, w), h - 45, 'mountain');
+            const m = this.add.image(Phaser.Math.Between(0, w), this.groundTop + 5, 'mountain');
             m.setOrigin(0.5, 1).setScale(Phaser.Math.FloatBetween(1.0, 1.6)).setTint(0xaabbcc).setAlpha(0.55).setDepth(-10);
             this.mountains.push(m);
         }
@@ -229,11 +229,13 @@ class DinoGame extends Phaser.Scene {
         }
 
         // Suelo
-        this.ground = this.add.rectangle(w / 2, h - 25, w, 50, 0x333333);
+        this.groundOffset = this.isMobile ? 100 : 60;
+        this.groundTop = h - this.groundOffset;
+        this.ground = this.add.rectangle(w / 2, this.groundTop + 25, w, 50, 0x333333);
         this.physics.add.existing(this.ground, true);
 
         // Player
-        this.player = this.physics.add.sprite(Math.max(50, w * 0.2), h - 50, "dino");
+        this.player = this.physics.add.sprite(Math.max(50, w * 0.2), this.groundTop, "dino");
         this.player.setOrigin(0.5, 1);
         this.player.body.setSize(40, 40);
         this.player.setCollideWorldBounds(true);
@@ -274,7 +276,7 @@ class DinoGame extends Phaser.Scene {
         const w = this.scale.width, h = this.scale.height;
         const isFlying = Phaser.Math.Between(0, 6) === 0;
         const key = isFlying ? 'mushroom_fly' : 'mushroom';
-        const baseY = isFlying ? h - 130 : h - 50;
+        const baseY = isFlying ? this.groundTop - 80 : this.groundTop;
 
         const e = this.physics.add.sprite(w + 60, baseY, key);
         e.setOrigin(0.5, 1);
@@ -304,7 +306,7 @@ class DinoGame extends Phaser.Scene {
         else if (r < 0.995) { key = 'magnet'; type = 'magnet'; }
         else { key = 'heart'; type = 'heart'; }
 
-        const y = Phaser.Math.Between(h - 220, h - 80);
+        const y = Phaser.Math.Between(this.groundTop - 200, this.groundTop - 60);
         const item = this.physics.add.sprite(w + 40, y, key);
         item.setData('type', type);
         item.body.setAllowGravity(false);
