@@ -155,6 +155,29 @@ class DinoGame extends Phaser.Scene {
             g.fillStyle(0xe8f0f8, 1);
             g.fillTriangle(85, 30, 100, 10, 115, 30);
         }, 200, 120);
+        // Textura de roca para el piso
+        this.makeTexture('rock', (g) => {
+            g.fillStyle(0x1a1d22, 1);
+            g.fillRect(0, 0, 200, 150);
+            const shades = [0x2a2d35, 0x353840, 0x252830, 0x40434b, 0x1f2228, 0x30333b, 0x2e313a];
+            for (let i = 0; i < 80; i++) {
+                const x = Math.random() * 200;
+                const y = 5 + Math.random() * 145;
+                const r = 4 + Math.random() * 10;
+                g.fillStyle(shades[Math.floor(Math.random() * shades.length)], 1);
+                g.fillCircle(x, y, r);
+            }
+            g.fillStyle(0x4a4d55, 1);
+            g.fillRect(0, 0, 200, 6);
+            g.fillStyle(0x5a5d65, 1);
+            g.fillRect(0, 0, 200, 3);
+            g.fillStyle(0x0f1115, 1);
+            for (let i = 0; i < 8; i++) {
+                const x = Math.random() * 200;
+                const y = 10 + Math.random() * 130;
+                g.fillRect(x, y, 1, 5 + Math.random() * 15);
+            }
+        }, 200, 150);
     }
 
     makeTexture(key, drawFn, w, h) {
@@ -172,7 +195,7 @@ class DinoGame extends Phaser.Scene {
 
         const bars = document.createElement('div');
         bars.id = 'powerup-bars';
-        const barsBottom = this.isMobile ? 180 : 80;
+        const barsBottom = this.groundOffset + 30;
     bars.style.cssText = `position:absolute;bottom:${barsBottom}px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;pointer-events:none;z-index:6;`;
 
         const makeBar = (color) => {
@@ -230,10 +253,14 @@ class DinoGame extends Phaser.Scene {
         }
 
         // Suelo
-        this.groundOffset = this.isMobile ? 180 : 60;
+        this.groundOffset = this.isMobile ? 180 : 80;
         this.groundTop = h - this.groundOffset;
-        this.ground = this.add.rectangle(w / 2, this.groundTop + 25, w, 50, 0x333333);
+        // Collider invisible (fino, en la superficie)
+        this.ground = this.add.rectangle(w / 2, this.groundTop + 5, w, 10, 0x333333).setVisible(false);
         this.physics.add.existing(this.ground, true);
+        // Visual: roca que cubre desde el suelo hasta abajo
+        const floorHeight = this.groundOffset + 80;
+        this.groundVisual = this.add.tileSprite(w / 2, this.groundTop + floorHeight / 2, w, floorHeight, 'rock').setDepth(-1);
 
         // Player
         this.player = this.physics.add.sprite(Math.max(50, w * 0.2), this.groundTop, "dino");
