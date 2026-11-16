@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Dino Runner</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -155,8 +155,23 @@
 
     $('restart-btn').onclick = () => {
       showScreen('game');
-      if (window.currentGame) { window.currentGame.destroy(true); window.currentGame = null; }
-      window.currentGame = window.startGame(currentAlias);
+      try {
+        if (window.currentGame && window.currentGame.scene) {
+          const scene = window.currentGame.scene.getScene('DinoGame');
+          if (scene && scene.scene && scene.scene.restart) {
+            scene.scene.restart();
+            return;
+          }
+        }
+      } catch (e) { console.warn('[RESTART] scene.restart falló:', e); }
+
+      try {
+        if (window.currentGame) { window.currentGame.destroy(true); window.currentGame = null; }
+        window.currentGame = window.startGame(currentAlias || 'Jugador_0000');
+      } catch (e) {
+        console.error('[RESTART] fallback falló:', e);
+        showScreen('start');
+      }
     };
 
     $('home-btn').onclick = () => {

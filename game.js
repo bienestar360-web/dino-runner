@@ -172,7 +172,8 @@ class DinoGame extends Phaser.Scene {
 
         const bars = document.createElement('div');
         bars.id = 'powerup-bars';
-        bars.style.cssText = 'position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;pointer-events:none;z-index:6;';
+        const barsBottom = this.isMobile ? 180 : 80;
+    bars.style.cssText = `position:absolute;bottom:${barsBottom}px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;pointer-events:none;z-index:6;`;
 
         const makeBar = (color) => {
             const bar = document.createElement('div');
@@ -229,7 +230,7 @@ class DinoGame extends Phaser.Scene {
         }
 
         // Suelo
-        this.groundOffset = this.isMobile ? 100 : 60;
+        this.groundOffset = this.isMobile ? 150 : 60;
         this.groundTop = h - this.groundOffset;
         this.ground = this.add.rectangle(w / 2, this.groundTop + 25, w, 50, 0x333333);
         this.physics.add.existing(this.ground, true);
