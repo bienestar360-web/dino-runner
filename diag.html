@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Diag</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #out { position: fixed; inset: 0; z-index: 9999; background: #000; color: #0f0;
+           font: 12px monospace; white-space: pre; overflow: auto; padding: 8px; }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="game-canvas"></div>
+  </div>
+  <pre id="out">starting...</pre>
+
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="supabase.js"></script>
+  <script src="game.js"></script>
+  <script>
+    const out = document.getElementById('out');
+    const log = (...a) => { out.textContent += '\n' + a.map(String).join(' '); };
+    window.onerror = (m, s, l) => { log('!! ERROR:', m, 'line', l); };
+
+    window.addEventListener('load', () => {
+      const t0 = Date.now();
+      const game = window.startGame('DiagUser');
+      window.currentGame = game;
+
+      setTimeout(() => {
+        try {
+          const scene = game.scene.getScene('DinoGame');
+          const canvas = document.querySelector('#game-canvas canvas');
+          const r = canvas.getBoundingClientRect();
+          const cam = scene.cameras.main;
+
+          log('=== SCALE / CANVAS ===');
+          log('scale.width/height   =', game.scale.width, game.scale.height);
+          log('canvas.width/height  =', canvas.width, canvas.height);
+          log('canvas style w/h     =', canvas.style.width, '|', canvas.style.height);
+          log('canvas rect          =', Math.round(r.width) + 'x' + Math.round(r.height),
+              '@', Math.round(r.left), Math.round(r.top));
+          log('devicePixelRatio     =', window.devicePixelRatio);
+          log('=== CAMERA ===');
+          log('cam.width/height     =', cam.width, cam.height);
+          log('cam.scrollX/Y        =', cam.scrollX, cam.scrollY);
+          log('cam.zoom             =', cam.zoom);
+          log('=== OBJECTS ===');
+          const p = scene.player, g = scene.ground;
+          log('player  x/y/vis      =', p.x, p.y, p.visible);
+          log('player  displayW/H   =', p.displayWidth, p.displayHeight);
+          log('player  body x/y/w/h =', Math.round(p.body.x), Math.round(p.body.y), p.body.width, p.body.height);
+          log('player  body.allowGravity =', p.body.allowGravity, 'gravityY=', p.body.gravity.y);
+          log('player  blocked.down =', p.body.blocked.down, 'touching.down=', p.body.touching.down);
+          log('ground  x/y/vis      =', g.x, g.y, g.visible);
+          log('ground  w/h          =', g.width, g.height, 'displayW/H=', g.displayWidth, g.displayHeight);
+          log('ground  body         ?', !!g.body, g.body ? (g.body.x + ',' + g.body.y + ' ' + g.body.width + 'x' + g.body.height) : 'none');
+          const obs = scene.obstacles.getChildren();
+          log('obstacles count      =', obs.length);
+          obs.slice(0, 5).forEach((o, i) => {
+            log(`  obs[${i}] ${o.texture.key} x=${Math.round(o.x)} y=${Math.round(o.y)} vis=${o.visible} ` +
+                `vy=${Math.round(o.body ? o.body.velocity.y : 0)} allowGravity=${o.body ? o.body.allowGravity : '?'}`);
+          });
+          log('=== LOOP ===');
+          log('fps                  =', game.loop.actualFps.toFixed(1));
+          log('score                =', Math.floor(scene.score), 'speed=', scene.speed.toFixed(2));
+          log('physics.world.gravity=', game.physics.world.gravity.y);
+          log('scoreText visible    =', scene.scoreText.visible, 'x/y=', scene.scoreText.x, scene.scoreText.y);
+          log('elapsed             =', Date.now() - t0, 'ms');
+          log('=== DONE ===');
+
+          // Export to window for Chrome --dump-dom to capture
+          window.__DIAG_DONE = true;
+          window.__DIAG_RESULT = out.textContent;
+          document.title = 'DIAG COMPLETE';
+
+          // Try to save to localStorage for later retrieval
+          try { localStorage.setItem('diag_result', out.textContent); } catch (e) {}
+
+          // If page was loaded with ?save=1, also try to POST to a local endpoint
+          const params = new URLSearchParams(window.location.search);
+          if (params.get('save') === '1') {
+            fetch('/save-diag', {
+              method: 'POST',
+              headers: { 'Content-Type': 'text/plain' },
+              body: out.textContent
+            }).catch(e => console.error('POST failed', e));
+          }
+        } catch (e) {
+          log('!! DIAG THREW:', e.message, '\n', e.stack);
+          document.title = 'DIAG ERROR';
+        }
+      }, 3000);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dino Runner</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+    <!-- FIX canvas: contenedor exclusivo del canvas de Phaser -->
+    <div id="game-canvas"></div>
+    <div id="start-screen">
+      <h1>🦖 Dino Runner</h1>
+      <p>Elige tu alias (déjalo vacío para uno aleatorio)</p>
+      <input type="text" id="alias-input" maxlength="15" placeholder="Alias" autocomplete="off">
+      <div class="btn-row">
+        <button id="start-btn">Jugar</button>
+        <button id="random-btn" class="ghost">Aleatorio</button>
+      </div>
+      <p id="alias-error" class="error"></p>
+    </div>
+
+    <div id="ui">
+      <div id="hud-left">
+        <div id="hud-alias">Jugador</div>
+        <div id="hud-score">0</div>
+      </div>
+      <div id="hud-speed">x1.0</div>
+    </div>
+
+    <div id="game-over-screen">
+      <h2>GAME OVER</h2>
+      <p class="final">Tu puntuación: <span id="final-score-text">0</span></p>
+      <div id="position-line">Calculando posición…</div>
+      <h3>TOP 3 GLOBAL</h3>
+      <ol id="top3-list"></ol>
+      <p id="rank-error" class="error"></p>
+      <div class="btn-row">
+        <button id="restart-btn">Reiniciar</button>
+        <button id="home-btn" class="ghost">Cambiar alias</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="supabase.js"></script>
+  <script src="game.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    let currentAlias = null;
+
+    function showScreen(id) {
+      $('start-screen').style.display = id === 'start' ? 'flex' : 'none';
+      $('ui').style.display = id === 'game' ? 'flex' : 'none';
+      $('game-over-screen').style.display = id === 'over' ? 'flex' : 'none';
+    }
+
+    async function resolveAlias() {
+      const typed = $('alias-input').value.trim();
+      if (!typed) {
+        try { return await asignarAliasDefault(); }
+        catch (e) { return `${CONFIG.defaultAliasPrefix}_${Math.floor(1000 + Math.random() * 9000)}`; }
+      }
+      if (typed.length > CONFIG.maxAliasLength) {
+        throw new Error(`Máximo ${CONFIG.maxAliasLength} caracteres`);
+      }
+      let exists = false;
+      try { exists = await verificarAlias(typed); }
+      catch (e) { throw new Error('No se pudo validar el alias (revisa config.js)'); }
+      if (exists) throw new Error('Ese alias ya existe, elige otro');
+      return typed;
+    }
+
+    // Nombre distinto para evitar colisión con window.startGame de game.js
+    async function onStartClick() {
+      $('alias-error').textContent = '';
+      $('start-btn').disabled = true;
+      try {
+        currentAlias = await resolveAlias();
+      } catch (e) {
+        $('alias-error').textContent = e.message;
+        $('start-btn').disabled = false;
+        return;
+      }
+      $('start-btn').disabled = false;
+      $('hud-alias').textContent = currentAlias;
+      showScreen('game');
+      // BUG 2 FIX: blur input and activeElement to stop Enter listeners during play
+      document.getElementById('alias-input').blur();
+      document.activeElement.blur();
+      if (window.currentGame) { window.currentGame.destroy(true); window.currentGame = null; }
+      window.currentGame = window.startGame(currentAlias);
+    }
+
+    function renderTop3(rows) {
+      const list = $('top3-list');
+      list.innerHTML = '';
+      rows.forEach((row, i) => {
+        const li = document.createElement('li');
+        const isMe = row.alias === currentAlias;
+        li.className = 'rank-item' + (isMe ? ' me' : '') + (i === 0 ? ' first' : '');
+        li.innerHTML = `
+          <span class="rank-alias">${i === 0 ? '👑 ' : ''}${row.alias}${isMe ? ' (tú)' : ''}</span>
+          <span class="rank-score">${row.score}</span>`;
+        list.appendChild(li);
+      });
+      if (!rows.length) list.innerHTML = '<li class="rank-item">Sin datos todavía</li>';
+    }
+
+    async function showGameOver(alias, score) {
+      showScreen('over');
+      $('final-score-text').textContent = score;
+      $('position-line').textContent = 'Guardando puntuación…';
+      $('rank-error').textContent = '';
+      $('top3-list').innerHTML = '';
+
+      try { await enviarPuntuacion(alias, score); }
+      catch (e) { $('rank-error').textContent = 'No se pudo guardar la puntuación (revisa config.js)'; }
+
+      try {
+        const [top, pos] = await Promise.all([obtenerTop3(), obtenerPosicion(alias, score)]);
+        renderTop3(top);
+        $('position-line').innerHTML = `Tu posición: <strong>#${pos}</strong>`;
+      } catch (e) {
+        $('position-line').textContent = 'Ranking no disponible';
+        $('rank-error').textContent = 'Revisa la URL y la anon key en config.js';
+      }
+    }
+
+    window.onGameOver = (alias, score) => showGameOver(alias, score);
+
+    $('start-btn').onclick = onStartClick;
+    $('alias-input').addEventListener('keydown', (e) => { 
+        if (e.key === 'Enter' && document.getElementById('start-screen').style.display !== 'none') {
+            e.preventDefault();
+            onStartClick();
+        }
+    });
+    $('random-btn').onclick = () => { $('alias-input').value = `${CONFIG.defaultAliasPrefix}_${Math.floor(1000 + Math.random() * 9000)}`; };
+
+    $('restart-btn').onclick = () => {
+      showScreen('game');
+      if (window.currentGame) { window.currentGame.destroy(true); window.currentGame = null; }
+      window.currentGame = window.startGame(currentAlias);
+    };
+
+    $('home-btn').onclick = () => {
+      if (window.currentGame) { window.currentGame.destroy(true); window.currentGame = null; }
+      currentAlias = null;
+      $('alias-input').value = '';
+      showScreen('start');
+    };
+
+    // 👇 FIX: arrancar mostrando la pantalla de inicio
+    showScreen('start');
+  </script>
+</body>
+</html>
