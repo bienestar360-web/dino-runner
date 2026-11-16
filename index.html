@@ -154,24 +154,41 @@
     $('random-btn').onclick = () => { $('alias-input').value = `${CONFIG.defaultAliasPrefix}_${Math.floor(1000 + Math.random() * 9000)}`; };
 
     $('restart-btn').onclick = () => {
-      showScreen('game');
+      console.log('[RESTART] clicked, currentAlias:', currentAlias);
+
+      // Método 1: scene.restart (ideal)
       try {
-        if (window.currentGame && window.currentGame.scene) {
+        if (window.currentGame) {
           const scene = window.currentGame.scene.getScene('DinoGame');
-          if (scene && scene.scene && scene.scene.restart) {
+          if (scene && scene.scene && typeof scene.scene.restart === 'function') {
+            if (scene.physics && scene.physics.world) scene.physics.world.resume();
             scene.scene.restart();
+            $('game-over-screen').style.display = 'none';
+            $('start-screen').style.display = 'none';
+            $('ui').style.display = 'flex';
+            console.log('[RESTART] scene.restart OK');
             return;
           }
         }
-      } catch (e) { console.warn('[RESTART] scene.restart falló:', e); }
+      } catch (e) { console.warn('[RESTART] scene.restart failed:', e); }
 
+      // Método 2: destroy + recreate
       try {
         if (window.currentGame) { window.currentGame.destroy(true); window.currentGame = null; }
-        window.currentGame = window.startGame(currentAlias || 'Jugador_0000');
-      } catch (e) {
-        console.error('[RESTART] fallback falló:', e);
-        showScreen('start');
-      }
+        $('game-over-screen').style.display = 'none';
+        $('start-screen').style.display = 'none';
+        $('ui').style.display = 'flex';
+        const alias = currentAlias || 'Jugador_0000';
+        $('hud-alias').textContent = alias;
+        window.currentGame = window.startGame(alias);
+        console.log('[RESTART] recreate OK');
+        return;
+      } catch (e) { console.error('[RESTART] recreate failed:', e); }
+
+      // Método 3: reload + auto-start
+      try { sessionStorage.setItem('dino_restart_alias', currentAlias || 'Jugador_0000'); } catch (e) {}
+      console.log('[RESTART] falling back to reload');
+      location.reload();
     };
 
     $('home-btn').onclick = () => {
@@ -180,6 +197,21 @@
       $('alias-input').value = '';
       showScreen('start');
     };
+
+    
+
+    // Auto-start si venimos de un reload-triggered restart
+    try {
+      const restartAlias = sessionStorage.getItem('dino_restart_alias');
+      if (restartAlias) {
+        sessionStorage.removeItem('dino_restart_alias');
+        currentAlias = restartAlias;
+        $('hud-alias').textContent = currentAlias;
+        showScreen('game');
+        window.currentGame = window.startGame(currentAlias);
+        console.log('[AUTO-RESTART] started with:', currentAlias);
+      }
+    } catch (e) { console.warn('[AUTO-RESTART] failed:', e); }
 
     // 👇 FIX: arrancar mostrando la pantalla de inicio
     showScreen('start');

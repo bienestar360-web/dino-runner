@@ -141,11 +141,14 @@ class DinoGame extends Phaser.Scene {
 
         // Nube
         this.makeTexture('cloud', (g) => {
-            g.fillStyle(0xffffff, 1);
+            g.fillStyle(0xd8e0e8, 1);
             g.fillCircle(20, 25, 15);
             g.fillCircle(40, 20, 18);
             g.fillCircle(60, 25, 15);
             g.fillRect(15, 25, 50, 15);
+            g.fillStyle(0xb8c4d0, 1);
+            g.fillCircle(20, 25, 10);
+            g.fillCircle(60, 25, 10);
         }, 80, 40);
 
         // Montaña
@@ -195,8 +198,8 @@ class DinoGame extends Phaser.Scene {
 
         const bars = document.createElement('div');
         bars.id = 'powerup-bars';
-        const barsBottom = this.groundOffset + 30;
-    bars.style.cssText = `position:absolute;bottom:${barsBottom}px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;pointer-events:none;z-index:6;`;
+        const barsTop = this.isMobile ? 100 : 80;
+    bars.style.cssText = `position:absolute;top:${barsTop}px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;pointer-events:none;z-index:15;`;
 
         const makeBar = (color) => {
             const bar = document.createElement('div');
@@ -240,7 +243,7 @@ class DinoGame extends Phaser.Scene {
         this.mountains = [];
         for (let i = 0; i < 3; i++) {
             const m = this.add.image(Phaser.Math.Between(0, w), this.groundTop + 5, 'mountain');
-            m.setOrigin(0.5, 1).setScale(Phaser.Math.FloatBetween(1.0, 1.6)).setTint(0xaabbcc).setAlpha(0.55).setDepth(-10);
+            m.setOrigin(0.5, 1).setScale(Phaser.Math.FloatBetween(1.0, 1.6)).setAlpha(0.75).setDepth(-8);
             this.mountains.push(m);
         }
 
@@ -248,7 +251,7 @@ class DinoGame extends Phaser.Scene {
         this.clouds = [];
         for (let i = 0; i < 4; i++) {
             const c = this.add.image(Phaser.Math.Between(0, w), Phaser.Math.Between(40, h * 0.35), 'cloud');
-            c.setScale(Phaser.Math.FloatBetween(0.6, 1.2)).setAlpha(0.85).setDepth(-9);
+            c.setScale(Phaser.Math.FloatBetween(0.6, 1.2)).setAlpha(0.9).setDepth(-6);
             this.clouds.push(c);
         }
 
