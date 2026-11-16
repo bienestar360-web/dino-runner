@@ -242,7 +242,7 @@ body, #game-container, canvas {
 
 #hud-left {
   position: absolute;
-  bottom: 8px;
+  top: 8px;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
