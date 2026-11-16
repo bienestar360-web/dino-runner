@@ -228,3 +228,69 @@ body, #game-container, canvas {
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
+
+
+/* === HUD v7: bottom center + barras verticales === */
+#ui {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  padding: 0;
+  z-index: 15;
+  display: block !important;
+}
+
+#hud-left {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+  padding: 6px 18px;
+  border-radius: 14px;
+  font-family: monospace;
+  min-width: 170px;
+  line-height: 1.25;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+#hud-alias {
+  font-size: 10px;
+  opacity: 0.65;
+  margin-bottom: 2px;
+  letter-spacing: 0.5px;
+}
+
+#hud-score {
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+#hud-next-life {
+  font-size: 10px;
+  opacity: 0.8;
+  margin-top: 3px;
+  color: #ffdd00;
+}
+
+#hud-lives {
+  font-size: 11px;
+  margin-top: 2px;
+  color: #aaa;
+}
+
+#hud-speed {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1;
+}

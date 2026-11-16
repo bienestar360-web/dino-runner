@@ -9,7 +9,7 @@ class DinoGame extends Phaser.Scene {
         this.isGhost = false;
         this.isMagnet = false;
         this.lives = 1;
-        this.nextLifeScore = 20000;
+        this.nextLifeScore = 10000;
         this.invulnerableUntil = 0;
         this.lastHudScore = -1;
         this.lastHudSpeed = null;
@@ -198,14 +198,13 @@ class DinoGame extends Phaser.Scene {
 
         const bars = document.createElement('div');
         bars.id = 'powerup-bars';
-        const barsTop = this.isMobile ? 100 : 80;
-    bars.style.cssText = `position:absolute;top:${barsTop}px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;pointer-events:none;z-index:15;`;
+        bars.style.cssText = 'position:absolute;right:10px;top:50%;transform:translateY(-50%);display:flex;flex-direction:row;gap:6px;pointer-events:none;z-index:15;';
 
         const makeBar = (color) => {
             const bar = document.createElement('div');
-            bar.style.cssText = 'width:180px;height:10px;background:rgba(0,0,0,0.15);border-radius:5px;overflow:hidden;display:none;';
+            bar.style.cssText = 'position:relative;width:8px;height:120px;background:rgba(0,0,0,0.15);border-radius:4px;overflow:hidden;display:none;';
             const fill = document.createElement('div');
-            fill.style.cssText = `height:100%;width:100%;background:${color};border-radius:5px;transition:width 0.05s linear;`;
+            fill.style.cssText = `position:absolute;bottom:0;left:0;width:100%;height:100%;background:${color};border-radius:4px;transition:height 0.05s linear;`;
             bar.appendChild(fill);
             return { bar, fill };
         };
@@ -289,9 +288,11 @@ class DinoGame extends Phaser.Scene {
         this.spawnNextCollectible();
 
         // HUD en canvas
-        this.scoreText = this.add.text(10, 10, 'Puntuación: 0', { font: '30px monospace', fill: '#333' });
-        this.speedText = this.add.text(w - 220, 10, 'Velocidad: 1.5x', { font: '20px monospace', fill: '#333' });
-        this.livesText = this.add.text(10, 50, 'Vidas: x1', { font: '20px monospace', fill: '#e74c3c' });
+        // HUD via DOM (index.html + style.css)
+        this.hudNextLifeEl = document.getElementById('hud-next-life');
+        this.hudLivesEl = document.getElementById('hud-lives');
+        this.lastNextLife = -1;
+        this.lastLives = -1;
     }
 
     spawnNext() {
@@ -397,9 +398,9 @@ class DinoGame extends Phaser.Scene {
     }
 
     updateLivesText() {
-        if (this.livesText) {
-            this.livesText.setText('Vidas: x' + this.lives);
-            this.livesText.setColor(this.lives > 1 ? '#e74c3c' : '#999999');
+        if (this.hudLivesEl) {
+            this.hudLivesEl.textContent = 'Vidas: x' + this.lives;
+            this.hudLivesEl.style.color = this.lives > 1 ? '#ff6b6b' : '#aaa';
         }
     }
 
@@ -475,7 +476,7 @@ class DinoGame extends Phaser.Scene {
         // Vida extra cada 20k
         if (this.score >= this.nextLifeScore) {
             this.lives++;
-            this.nextLifeScore += 20000;
+            this.nextLifeScore += 10000;
             SoundFX.extraLife();
             this.updateLivesText();
             this.cameras.main.flash(300, 255, 150, 150);
@@ -524,11 +525,11 @@ class DinoGame extends Phaser.Scene {
         // Barras de power-ups
         if (this.isGhost && this.ghostFillEl) {
             const rem = Math.max(0, this.ghostEndTime - this.time.now);
-            this.ghostFillEl.style.width = (rem / 10000 * 100) + '%';
+            this.ghostFillEl.style.height = (rem / 10000 * 100) + '%';
         }
         if (this.isMagnet && this.magnetFillEl) {
             const rem = Math.max(0, this.magnetEndTime - this.time.now);
-            this.magnetFillEl.style.width = (rem / 10000 * 100) + '%';
+            this.magnetFillEl.style.height = (rem / 10000 * 100) + '%';
         }
 
         // HUD DOM
@@ -540,10 +541,20 @@ class DinoGame extends Phaser.Scene {
             const v = (this.speed / 3).toFixed(1);
             if (v !== this.lastHudSpeed) { this.lastHudSpeed = v; this.hudSpeedEl.textContent = 'x' + v; }
         }
+        if (this.hudNextLifeEl) {
+            const remaining = Math.max(0, Math.ceil(this.nextLifeScore - this.score));
+            if (remaining !== this.lastNextLife) {
+                this.lastNextLife = remaining;
+                this.hudNextLifeEl.textContent = 'Próxima vida: ' + remaining.toLocaleString() + ' pts';
+            }
+        }
+        if (this.hudLivesEl && this.lives !== this.lastLives) {
+            this.lastLives = this.lives;
+            this.hudLivesEl.textContent = 'Vidas: x' + this.lives;
+            this.hudLivesEl.style.color = this.lives > 1 ? '#ff6b6b' : '#aaa';
+        }
 
         // HUD canvas
-        this.scoreText.setText('Puntuación: ' + Math.floor(this.score));
-        this.speedText.setText('Velocidad: ' + (this.speed / 3).toFixed(1) + 'x');
     }
 }
 
