@@ -230,7 +230,7 @@ class DinoGame extends Phaser.Scene {
         }
 
         // Suelo
-        this.groundOffset = this.isMobile ? 150 : 60;
+        this.groundOffset = this.isMobile ? 180 : 60;
         this.groundTop = h - this.groundOffset;
         this.ground = this.add.rectangle(w / 2, this.groundTop + 25, w, 50, 0x333333);
         this.physics.add.existing(this.ground, true);
