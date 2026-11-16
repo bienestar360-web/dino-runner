@@ -221,3 +221,10 @@ button.ghost {
   #game-over-screen h2 { font-size: 1.4rem; }
   .rank-item { padding: 6px 10px; }
 }
+/* Mobile: evita gestos táctiles no deseados */
+body, #game-container, canvas {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}

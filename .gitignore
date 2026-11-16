@@ -1,11 +1,28 @@
+# Backups
 *.backup-*
 *.backup
+
+# Chrome temporal (basura de DSH)
+chrome-tmp/
+
+# Debug temporal
+diag.html
+simout.html
+test-sim.html
+
+# Sistema
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Logs
 *.log
+
+# Node
 node_modules/
 npm-debug.log*
+
+# Editor
 .vscode/
 .idea/
 *.swp
