@@ -233,7 +233,7 @@ class DinoGame extends Phaser.Scene {
         this.physics.add.existing(this.ground, true);
 
         // Player
-        this.player = this.physics.add.sprite(w / 2, h - 50, 'dino');
+        this.player = this.physics.add.sprite(Math.max(50, w * 0.2), h - 50, "dino");
         this.player.setOrigin(0.5, 1);
         this.player.body.setSize(40, 40);
         this.player.setCollideWorldBounds(true);

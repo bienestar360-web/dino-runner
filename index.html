@@ -61,17 +61,28 @@
 
     async function resolveAlias() {
       const typed = $('alias-input').value.trim();
+
+      // Sin alias: generar uno aleatorio
       if (!typed) {
         try { return await asignarAliasDefault(); }
         catch (e) { return `${CONFIG.defaultAliasPrefix}_${Math.floor(1000 + Math.random() * 9000)}`; }
       }
+
+      // Validar longitud
       if (typed.length > CONFIG.maxAliasLength) {
         throw new Error(`Máximo ${CONFIG.maxAliasLength} caracteres`);
       }
-      let exists = false;
-      try { exists = await verificarAlias(typed); }
-      catch (e) { throw new Error('No se pudo validar el alias (revisa config.js)'); }
-      if (exists) throw new Error('Ese alias ya existe, elige otro');
+
+      // Si es el alias guardado previamente, permitirlo sin verificar
+      try {
+        const savedAlias = localStorage.getItem('dino_alias');
+        if (savedAlias && typed === savedAlias) {
+          return typed;
+        }
+      } catch (e) { /* localStorage no disponible */ }
+
+      // Cualquier otro alias: permitir sin verificar.
+      // enviarPuntuacion ya maneja la colisión con UPSERT (conserva el mejor score).
       return typed;
     }
 
