@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Dino Runner</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
   <div id="game-container">
@@ -47,9 +50,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <script src="config.js"></script>
-  <script src="supabase.js"></script>
-  <script src="game.js"></script>
+  <script src="config.js?v=7"></script>
+  <script src="supabase.js?v=7"></script>
+  <script src="game.js?v=7"></script>
   <script>
     const $ = (id) => document.getElementById(id);
 
@@ -162,8 +165,10 @@
         const alias = currentAlias || localStorage.getItem('dino_alias') || 'Jugador_0000';
         sessionStorage.setItem('dino_restart_alias', alias);
       } catch (e) {}
-      // Reload directo (método más confiable, ~300ms en Vercel)
-      location.reload();
+      // Reload con cache-busting: fuerza al móvil a traer el HTML nuevo
+      const bust = '?r=' + Date.now();
+      console.log('[RESTART] reloading with cache-bust:', bust);
+      location.href = location.pathname + bust;
     };
 
     $('home-btn').onclick = () => {
@@ -172,10 +177,11 @@
       $('alias-input').value = '';
       showScreen('start');
     };
-
-    
+    // Arrancar en pantalla de inicio (por defecto)
+    showScreen('start');
 
     // Auto-start si venimos de un reload-triggered restart
+    // (DEBE ir después de showScreen('start') para sobrescribirlo)
     try {
       const restartAlias = sessionStorage.getItem('dino_restart_alias');
       if (restartAlias) {
@@ -188,8 +194,6 @@
       }
     } catch (e) { console.warn('[AUTO-RESTART] failed:', e); }
 
-    // 👇 FIX: arrancar mostrando la pantalla de inicio
-    showScreen('start');
   </script>
 </body>
 </html>
