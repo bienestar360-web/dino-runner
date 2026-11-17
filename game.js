@@ -283,7 +283,8 @@ class DinoGame extends Phaser.Scene {
 ;
         // Visual: roca que cubre desde el suelo hasta abajo
         const floorHeight = this.groundOffset + 80;
-        this.groundVisual = this.add.tileSprite(w / 2, this.groundTop + floorHeight / 2, w, floorHeight, 'rock').setDepth(-1);
+        // [REMOVED: sobrescribía groundVisual con capa oculta depth:-1 que no se scrolleaba]
+        // this.groundVisual = this.add.tileSprite(w / 2, this.groundTop + floorHeight / 2, w, floorHeight, 'rock').setDepth(-1);
 
         // Player
         this.player = this.physics.add.sprite(Math.max(50, w * 0.2), this.groundTop, "dino");
