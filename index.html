@@ -54,61 +54,70 @@
   <script src="supabase.js?v=7"></script>
   <script src="game.js?v=7"></script>
   <script>
+
+    // === HELPERS DE DISPLAY (fuerzan visibilidad con !important) ===
     const $ = (id) => document.getElementById(id);
+
+    function forceShow(id) {
+      const el = $(id);
+      if (el) el.style.setProperty('display', 'flex', 'important');
+    }
+    function forceHide(id) {
+      const el = $(id);
+      if (el) el.style.setProperty('display', 'none', 'important');
+    }
+
+    function showScreen(which) {
+      console.log('[SCREEN] ->', which);
+      // Ocultar todos
+      forceHide('start-screen');
+      forceHide('ui');
+      forceHide('game-over-screen');
+      // Mostrar el pedido
+      if (which === 'start') forceShow('start-screen');
+      else if (which === 'game') forceShow('ui');
+      else if (which === 'over') forceShow('game-over-screen');
+      // Log de estado
+      console.log('[SCREEN-STATE] start:', $('start-screen').style.display,
+                  '| ui:', $('ui').style.display,
+                  '| over:', $('game-over-screen').style.display);
+    }
 
     let currentAlias = null;
 
-    function showScreen(id) {
-      $('start-screen').style.display = id === 'start' ? 'flex' : 'none';
-      $('ui').style.display = id === 'game' ? 'flex' : 'none';
-      $('game-over-screen').style.display = id === 'over' ? 'flex' : 'none';
-    }
-
     async function resolveAlias() {
       const typed = $('alias-input').value.trim();
-
-      // Sin alias: generar uno aleatorio
       if (!typed) {
         try { return await asignarAliasDefault(); }
         catch (e) { return `${CONFIG.defaultAliasPrefix}_${Math.floor(1000 + Math.random() * 9000)}`; }
       }
-
-      // Validar longitud
       if (typed.length > CONFIG.maxAliasLength) {
         throw new Error(`Máximo ${CONFIG.maxAliasLength} caracteres`);
       }
-
-      // Si es el alias guardado previamente, permitirlo sin verificar
       try {
         const savedAlias = localStorage.getItem('dino_alias');
-        if (savedAlias && typed === savedAlias) {
-          return typed;
-        }
-      } catch (e) { /* localStorage no disponible */ }
-
-      // Cualquier otro alias: permitir sin verificar.
-      // enviarPuntuacion ya maneja la colisión con UPSERT (conserva el mejor score).
+        if (savedAlias && typed === savedAlias) return typed;
+      } catch (e) {}
       return typed;
     }
 
-    // Nombre distinto para evitar colisión con window.startGame de game.js
     async function onStartClick() {
       $('alias-error').textContent = '';
       $('start-btn').disabled = true;
-      try {
-        currentAlias = await resolveAlias();
-      } catch (e) {
+      try { currentAlias = await resolveAlias(); }
+      catch (e) {
         $('alias-error').textContent = e.message;
         $('start-btn').disabled = false;
         return;
       }
       $('start-btn').disabled = false;
       $('hud-alias').textContent = currentAlias;
+      try { localStorage.setItem('dino_alias', currentAlias); } catch (e) {}
+      try { $('alias-input').blur(); } catch (e) {}
+
       showScreen('game');
-      // BUG 2 FIX: blur input and activeElement to stop Enter listeners during play
-      document.getElementById('alias-input').blur();
-      document.activeElement.blur();
-      if (window.currentGame) { window.currentGame.destroy(true); window.currentGame = null; }
+
+      if (window.currentGame) { try { window.currentGame.destroy(true); } catch (e) {} window.currentGame = null; }
       window.currentGame = window.startGame(currentAlias);
     }
 
@@ -119,9 +128,7 @@
         const li = document.createElement('li');
         const isMe = row.alias === currentAlias;
         li.className = 'rank-item' + (isMe ? ' me' : '') + (i === 0 ? ' first' : '');
-        li.innerHTML = `
-          <span class="rank-alias">${i === 0 ? '👑 ' : ''}${row.alias}${isMe ? ' (tú)' : ''}</span>
-          <span class="rank-score">${row.score}</span>`;
+        li.innerHTML = `<span class="rank-alias">${i === 0 ? '👑 ' : ''}${row.alias}${isMe ? ' (tú)' : ''}</span><span class="rank-score">${row.score}</span>`;
         list.appendChild(li);
       });
       if (!rows.length) list.innerHTML = '<li class="rank-item">Sin datos todavía</li>';
@@ -133,67 +140,106 @@
       $('position-line').textContent = 'Guardando puntuación…';
       $('rank-error').textContent = '';
       $('top3-list').innerHTML = '';
-
       try { await enviarPuntuacion(alias, score); }
-      catch (e) { $('rank-error').textContent = 'No se pudo guardar la puntuación (revisa config.js)'; }
-
+      catch (e) { $('rank-error').textContent = 'No se pudo guardar la puntuación'; }
       try {
         const [top, pos] = await Promise.all([obtenerTop3(), obtenerPosicion(alias, score)]);
         renderTop3(top);
         $('position-line').innerHTML = `Tu posición: <strong>#${pos}</strong>`;
       } catch (e) {
         $('position-line').textContent = 'Ranking no disponible';
-        $('rank-error').textContent = 'Revisa la URL y la anon key en config.js';
       }
     }
 
     window.onGameOver = (alias, score) => showGameOver(alias, score);
 
+    // Listeners
     $('start-btn').onclick = onStartClick;
-    $('alias-input').addEventListener('keydown', (e) => { 
-        if (e.key === 'Enter' && document.getElementById('start-screen').style.display !== 'none') {
-            e.preventDefault();
-            onStartClick();
-        }
+    $('alias-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && $('start-screen').style.display !== 'none') {
+        e.preventDefault();
+        onStartClick();
+      }
     });
     $('random-btn').onclick = () => { $('alias-input').value = `${CONFIG.defaultAliasPrefix}_${Math.floor(1000 + Math.random() * 9000)}`; };
 
     $('restart-btn').onclick = () => {
-      console.log('[RESTART] forcing reload');
-      // Guardar alias para auto-inicio tras reload
+      console.log('[RESTART] forcing reload with cache-bust');
       try {
         const alias = currentAlias || localStorage.getItem('dino_alias') || 'Jugador_0000';
         sessionStorage.setItem('dino_restart_alias', alias);
       } catch (e) {}
-      // Reload con cache-busting: fuerza al móvil a traer el HTML nuevo
-      const bust = '?r=' + Date.now();
-      console.log('[RESTART] reloading with cache-bust:', bust);
-      location.href = location.pathname + bust;
+      location.href = location.pathname + '?r=' + Date.now();
     };
 
     $('home-btn').onclick = () => {
-      if (window.currentGame) { window.currentGame.destroy(true); window.currentGame = null; }
+      if (window.currentGame) { try { window.currentGame.destroy(true); } catch (e) {} window.currentGame = null; }
       currentAlias = null;
       $('alias-input').value = '';
       showScreen('start');
     };
-    // Arrancar en pantalla de inicio (por defecto)
-    showScreen('start');
 
-    // Auto-start si venimos de un reload-triggered restart
-    // (DEBE ir después de showScreen('start') para sobrescribirlo)
-    try {
-      const restartAlias = sessionStorage.getItem('dino_restart_alias');
+    // === AUTO-RESTART o pantalla de inicio ===
+    // Esta es la ÚNICA lógica de arranque. Si hay alias pendiente, va directo al juego.
+    (function init() {
+      let restartAlias = null;
+      try { restartAlias = sessionStorage.getItem('dino_restart_alias'); } catch (e) {}
+
       if (restartAlias) {
-        sessionStorage.removeItem('dino_restart_alias');
+        try { sessionStorage.removeItem('dino_restart_alias'); } catch (e) {}
+        console.log('[INIT] Auto-restart with alias:', restartAlias);
         currentAlias = restartAlias;
-        $('hud-alias').textContent = currentAlias;
+        $('hud-alias').textContent = restartAlias;
+        // Mostrar el juego (no la pantalla de inicio)
         showScreen('game');
-        window.currentGame = window.startGame(currentAlias);
-        console.log('[AUTO-RESTART] started with:', currentAlias);
+        // Crear Phaser
+        window.currentGame = window.startGame(restartAlias);
+        // Refuerzo final: forzar displays correctos por si acaso
+        setTimeout(() => {
+          $('start-screen').style.setProperty('display', 'none', 'important');
+          $('game-over-screen').style.setProperty('display', 'none', 'important');
+          $('ui').style.setProperty('display', 'flex', 'important');
+          console.log('[INIT] Force-display applied');
+        }, 50);
+      } else {
+        console.log('[INIT] No restart, showing start screen');
+        showScreen('start');
       }
-    } catch (e) { console.warn('[AUTO-RESTART] failed:', e); }
+    })();
 
-  </script>
+  // === FALLBACK MÓVIL: touchend + pointerup por si preventDefault bloquea click ===
+  (function() {
+    function attach() {
+      const btn = document.getElementById('restart-btn');
+      if (!btn) { setTimeout(attach, 200); return; }
+      let __restarting = false;
+      const handler = (ev) => {
+        if (__restarting) return;
+        __restarting = true;
+        if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+        console.log('[RESTART-FALLBACK] touchend/pointerup triggered');
+        try {
+          const alias = (typeof currentAlias !== 'undefined' && currentAlias)
+                     || localStorage.getItem('dino_alias') || 'Jugador_0000';
+          sessionStorage.setItem('dino_restart_alias', alias);
+          console.log('[RESTART-FALLBACK] alias saved:', alias);
+        } catch (e) { console.warn('[RESTART-FALLBACK] sessionStorage failed:', e); }
+        const url = location.pathname + '?r=' + Date.now();
+        console.log('[RESTART-FALLBACK] redirecting to:', url);
+        location.href = url;
+        setTimeout(() => { __restarting = false; }, 2000);
+      };
+      btn.addEventListener('touchend', handler, { passive: false });
+      btn.addEventListener('pointerup', handler);
+      console.log('[RESTART-FALLBACK] touchend + pointerup attached');
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', attach);
+    } else {
+      attach();
+    }
+  })();
+
+</script>
 </body>
 </html>
