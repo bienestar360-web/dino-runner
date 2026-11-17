@@ -171,6 +171,12 @@
         showGameOver(alias, score);
       };
 
+      // Timeout de seguridad: si la API no responde en 5s, Game Over directo
+      const timeout = setTimeout(() => {
+        console.warn('[ADS] timeout 5s, forzando Game Over');
+        show();
+      }, 5000);
+
       if (typeof adBreak === 'function') {
         console.log('[ADS] adBreak next');
         adBreak({
@@ -186,15 +192,18 @@
           },
           afterAd: () => {
             console.log('[ADS] afterAd');
+            clearTimeout(timeout);
             show();
           },
           adBreakDone: (info) => {
             console.log('[ADS] adBreakDone:', info.breakStatus);
+            clearTimeout(timeout);
             if (info.breakStatus !== 'viewed') show();
           }
         });
       } else {
         console.warn('[ADS] adBreak no disponible, Game Over directo');
+        clearTimeout(timeout);
         show();
       }
     };
