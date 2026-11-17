@@ -102,11 +102,17 @@ class DinoGame extends Phaser.Scene {
             g.fillRect(27, 32, 3, 5);
         }, 50, 50);
 
-        // Moneda
-        this.makeTexture('coin', (g) => {
-            g.fillStyle(0xffd700, 1); g.fillCircle(15, 15, 15);
-            g.fillStyle(0xffed4e, 1); g.fillCircle(15, 15, 10);
-            g.fillStyle(0xffffff, 1); g.fillCircle(15, 15, 4);
+        // Carne
+        this.makeTexture('meat', (g) => {
+            // Borde oscuro
+            g.fillStyle(0x5a1a1a, 1); g.fillEllipse(15, 13, 24, 18);
+            // Carne roja
+            g.fillStyle(0xd94a3a, 1); g.fillEllipse(15, 13, 20, 14);
+            // Veta rosada
+            g.fillStyle(0xf08070, 1); g.fillEllipse(11, 11, 8, 4);
+            // Hueso blanco
+            g.fillStyle(0xf5f0e0, 1); g.fillRect(11, 22, 8, 4);
+            g.fillStyle(0xffffff, 0.6); g.fillRect(11, 22, 8, 1);
         }, 30, 30);
 
         // Estrella
@@ -377,7 +383,7 @@ class DinoGame extends Phaser.Scene {
         const w = this.scale.width, h = this.scale.height;
         const r = Math.random();
         let key, type;
-        if (r < 0.845) { key = 'coin'; type = 'coin'; }
+        if (r < 0.845) { key = 'meat'; type = 'meat'; }
         else if (r < 0.92) { key = 'star'; type = 'star'; }
         else if (r < 0.995) { key = 'magnet'; type = 'magnet'; }
         else { key = 'heart'; type = 'heart'; }
@@ -451,7 +457,7 @@ class DinoGame extends Phaser.Scene {
     collectItem(player, item) {
         const type = item.getData('type');
         item.destroy();
-        if (type === 'coin') { this.score += 50; SoundFX.coin(); }
+        if (type === 'meat') { this.score += 50; SoundFX.coin(); }
         else if (type === 'star') { this.activateGhost(); }
         else if (type === 'magnet') { this.activateMagnet(); }
         else if (type === 'heart') { this.lives++; this.updateLivesText(); SoundFX.extraLife(); }
