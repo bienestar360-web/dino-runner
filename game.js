@@ -102,17 +102,27 @@ class DinoGame extends Phaser.Scene {
             g.fillRect(27, 32, 3, 5);
         }, 50, 50);
 
-        // Carne
+        // Carne (muslo de pollo: hueso + carne)
         this.makeTexture('meat', (g) => {
-            // Borde oscuro
-            g.fillStyle(0x5a1a1a, 1); g.fillEllipse(15, 13, 24, 18);
-            // Carne roja
-            g.fillStyle(0xd94a3a, 1); g.fillEllipse(15, 13, 20, 14);
-            // Veta rosada
-            g.fillStyle(0xf08070, 1); g.fillEllipse(11, 11, 8, 4);
-            // Hueso blanco
-            g.fillStyle(0xf5f0e0, 1); g.fillRect(11, 22, 8, 4);
-            g.fillStyle(0xffffff, 0.6); g.fillRect(11, 22, 8, 1);
+            // 1) Hueso: bola blanca + shaft (sale por abajo-izq)
+            g.fillStyle(0xf5f0e0, 1);
+            g.fillCircle(9, 24, 5);          // bola del hueso
+            g.fillRect(9, 18, 4, 8);         // shaft
+            g.fillStyle(0xd8d2c0, 1);
+            g.fillCircle(9, 24, 3);          // sombra interna
+            // 2) Carne: óvalo grande arriba-derecha (más oscuro abajo)
+            g.fillStyle(0x8b2a20, 1);
+            g.fillEllipse(18, 13, 26, 22);   // borde
+            g.fillStyle(0xd94a3a, 1);
+            g.fillEllipse(18, 12, 22, 18);   // carne
+            // 3) Brillo (más claro arriba)
+            g.fillStyle(0xf08070, 1);
+            g.fillEllipse(15, 8, 10, 5);
+            g.fillStyle(0xffb0a0, 1);
+            g.fillEllipse(13, 7, 5, 3);
+            // 4) Corte oscuro donde entra el hueso
+            g.fillStyle(0x5a1a1a, 1);
+            g.fillEllipse(13, 18, 8, 4);
         }, 30, 30);
 
         // Estrella
