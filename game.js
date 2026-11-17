@@ -231,6 +231,15 @@ class DinoGame extends Phaser.Scene {
             g.fillStyle(0x2a1a0a, 1);
             g.fillRect(20, 14, 3, 3); g.fillRect(38, 28, 4, 3);
             g.generateTexture('groundTile', 64, 50);
+
+            // Textura de polvo
+            if (!this.textures.exists('dust')) {
+                const d = this.make.graphics({ x: 0, y: 0, add: false });
+                d.fillStyle(0xcccccc, 1);
+                d.fillCircle(4, 4, 4);
+                d.generateTexture('dust', 8, 8);
+                d.destroy();
+            }
             g.destroy();
         }
 
@@ -280,6 +289,19 @@ class DinoGame extends Phaser.Scene {
             this.scale.width / 2, this.groundTop + 25,
             this.scale.width, 50, 'groundTile'
         );
+
+        // Emisor de polvo detrás del dino
+        this.dustEmitter = this.add.particles(0, 0, 'dust', {
+            speed: { min: 20, max: 60 },
+            angle: { min: 200, max: 240 },
+            scale: { start: 1, end: 0 },
+            alpha: { start: 0.6, end: 0 },
+            lifespan: 400,
+            frequency: 80,
+            emitting: false,
+            gravityY: -40
+        });
+        this.dustEmitter.setDepth(-2);
 ;
         // Visual: roca que cubre desde el suelo hasta abajo
         const floorHeight = this.groundOffset + 80;
@@ -485,6 +507,13 @@ class DinoGame extends Phaser.Scene {
 
     update(time, delta) {
         if (this.groundVisual) this.groundVisual.tilePositionX += 5;
+        if (this.dustEmitter && !this.gameOver) {
+            const onFloor = this.player.body.onFloor();
+            this.dustEmitter.emitting = onFloor;
+            if (onFloor) {
+                this.dustEmitter.setPosition(this.player.x - 18, this.player.body.bottom - 6);
+            }
+        }
         if (this.gameOver) {
             if (Phaser.Input.Keyboard.JustDown(this.jumpKey)) this.scene.restart();
             return;
