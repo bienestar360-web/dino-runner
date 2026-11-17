@@ -126,6 +126,27 @@ class DinoGame extends Phaser.Scene {
             g.fillEllipse(13 * k, 18 * k, 8 * k, 4 * k);
         }, 40, 40);
 
+        // Meteorito (fondo, crece con score)
+        this.makeTexture('meteor', (g) => {
+            // Halo de fuego (capas concéntricas)
+            g.fillStyle(0x8b1a1a, 0.35); g.fillCircle(40, 40, 38);
+            g.fillStyle(0xff6a00, 0.45); g.fillCircle(40, 40, 32);
+            g.fillStyle(0xffaa00, 0.55); g.fillCircle(40, 40, 26);
+            // Cuerpo rocoso
+            g.fillStyle(0x3a2a2a, 1); g.fillCircle(40, 40, 22);
+            g.fillStyle(0x4a3a3a, 1); g.fillCircle(40, 40, 20);
+            g.fillStyle(0x5a4a4a, 1); g.fillCircle(38, 38, 16);
+            // Cráteres
+            g.fillStyle(0x2a1a1a, 1);
+            g.fillCircle(32, 34, 4);
+            g.fillCircle(46, 40, 3);
+            g.fillCircle(40, 50, 2);
+            g.fillCircle(50, 32, 2);
+            // Highlight (iluminado arriba-izq)
+            g.fillStyle(0x7a6a6a, 1); g.fillCircle(34, 34, 4);
+            g.fillStyle(0x9a8a8a, 0.7); g.fillCircle(32, 32, 2);
+        }, 80, 80);
+
         // Estrella
         this.makeTexture('star', (g) => {
             const pts = [];
@@ -345,6 +366,11 @@ class DinoGame extends Phaser.Scene {
         this.jumpKey.on('down', () => this.tryJump());
         this.input.on('pointerdown', () => this.tryJump());
 
+        // Meteorito en el fondo (semilla casi invisible al inicio)
+        this.meteor = this.add.image(this.scale.width - 100, 100, 'meteor')
+            .setDepth(-3)
+            .setScale(0.12);
+
         this.spawnNext();
         this.spawnNextCollectible();
 
@@ -524,6 +550,12 @@ class DinoGame extends Phaser.Scene {
 
     update(time, delta) {
         if (this.groundVisual) this.groundVisual.tilePositionX += 5;
+        // Meteorito creciendo con el score (0.12 → 1.2 en 10000 pts)
+        if (this.meteor) {
+            const s = Math.min(1.2, 0.12 + (this.score / 10000) * 1.08);
+            this.meteor.setScale(s);
+            this.meteor.x = this.scale.width - 100 - (s - 0.12) * 35;
+        }
         if (this.dustEmitter && !this.gameOver) {
             const onFloor = this.player.body.onFloor();
             this.dustEmitter.emitting = onFloor;
