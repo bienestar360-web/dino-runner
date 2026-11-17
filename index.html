@@ -162,7 +162,41 @@
       }
     }
 
-    window.onGameOver = (alias, score) => showGameOver(alias, score);
+    window.onGameOver = (alias, score) => {
+      let shown = false;
+      const show = () => {
+        if (shown) return;
+        shown = true;
+        showGameOver(alias, score);
+      };
+
+      if (typeof adBreak === 'function') {
+        console.log('[ADS] adBreak next');
+        adBreak({
+          type: 'next',
+          name: 'game_over',
+          beforeAd: () => {
+            console.log('[ADS] beforeAd');
+            try {
+              const sc = window.currentGame && window.currentGame.scene
+                       && window.currentGame.scene.scenes && window.currentGame.scene.scenes[0];
+              if (sc && sc.sound) sc.sound.pauseAll();
+            } catch (e) {}
+          },
+          afterAd: () => {
+            console.log('[ADS] afterAd');
+            show();
+          },
+          adBreakDone: (info) => {
+            console.log('[ADS] adBreakDone:', info.breakStatus);
+            if (info.breakStatus !== 'viewed') show();
+          }
+        });
+      } else {
+        console.warn('[ADS] adBreak no disponible, Game Over directo');
+        show();
+      }
+    };
 
     // Listeners
     $('start-btn').onclick = onStartClick;
