@@ -220,6 +220,20 @@ class DinoGame extends Phaser.Scene {
     }
 
     create() {
+        // Textura procedural del piso (rocas repetibles)
+        if (!this.textures.exists('groundTile')) {
+            const g = this.make.graphics({ x: 0, y: 0, add: false });
+            g.fillStyle(0x3a2a1a, 1); g.fillRect(0, 0, 64, 50);
+            g.fillStyle(0x5a4030, 1);
+            g.fillRect(6, 8, 6, 4); g.fillRect(28, 18, 8, 5);
+            g.fillRect(48, 6, 5, 3); g.fillRect(18, 32, 7, 4);
+            g.fillRect(42, 36, 6, 3); g.fillRect(10, 22, 4, 3);
+            g.fillStyle(0x2a1a0a, 1);
+            g.fillRect(20, 14, 3, 3); g.fillRect(38, 28, 4, 3);
+            g.generateTexture('groundTile', 64, 50);
+            g.destroy();
+        }
+
         const w = this.scale.width;
         const h = this.scale.height;
         SoundFX.init();
@@ -259,7 +273,14 @@ class DinoGame extends Phaser.Scene {
         this.groundTop = h - this.groundOffset;
         // Collider invisible (fino, en la superficie)
         this.ground = this.add.rectangle(w / 2, this.groundTop + 5, w, 10, 0x333333).setVisible(false);
-        this.physics.add.existing(this.ground, true);
+        this.physics.add.existing(this.ground, true)
+
+        this.ground.setVisible(false);
+        this.groundVisual = this.add.tileSprite(
+            this.scale.width / 2, this.groundTop + 25,
+            this.scale.width, 50, 'groundTile'
+        );
+;
         // Visual: roca que cubre desde el suelo hasta abajo
         const floorHeight = this.groundOffset + 80;
         this.groundVisual = this.add.tileSprite(w / 2, this.groundTop + floorHeight / 2, w, floorHeight, 'rock').setDepth(-1);
@@ -462,6 +483,7 @@ class DinoGame extends Phaser.Scene {
     }
 
     update(time, delta) {
+        if (this.groundVisual) this.groundVisual.tilePositionX += 5;
         if (this.gameOver) {
             if (Phaser.Input.Keyboard.JustDown(this.jumpKey)) this.scene.restart();
             return;
