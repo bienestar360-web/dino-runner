@@ -156,40 +156,13 @@
     $('random-btn').onclick = () => { $('alias-input').value = `${CONFIG.defaultAliasPrefix}_${Math.floor(1000 + Math.random() * 9000)}`; };
 
     $('restart-btn').onclick = () => {
-      console.log('[RESTART] clicked, currentAlias:', currentAlias);
-
-      // Método 1: scene.restart (ideal)
+      console.log('[RESTART] forcing reload');
+      // Guardar alias para auto-inicio tras reload
       try {
-        if (window.currentGame) {
-          const scene = window.currentGame.scene.getScene('DinoGame');
-          if (scene && scene.scene && typeof scene.scene.restart === 'function') {
-            if (scene.physics && scene.physics.world) scene.physics.world.resume();
-            scene.scene.restart();
-            $('game-over-screen').style.display = 'none';
-            $('start-screen').style.display = 'none';
-            $('ui').style.display = 'flex';
-            console.log('[RESTART] scene.restart OK');
-            return;
-          }
-        }
-      } catch (e) { console.warn('[RESTART] scene.restart failed:', e); }
-
-      // Método 2: destroy + recreate
-      try {
-        if (window.currentGame) { window.currentGame.destroy(true); window.currentGame = null; }
-        $('game-over-screen').style.display = 'none';
-        $('start-screen').style.display = 'none';
-        $('ui').style.display = 'flex';
-        const alias = currentAlias || 'Jugador_0000';
-        $('hud-alias').textContent = alias;
-        window.currentGame = window.startGame(alias);
-        console.log('[RESTART] recreate OK');
-        return;
-      } catch (e) { console.error('[RESTART] recreate failed:', e); }
-
-      // Método 3: reload + auto-start
-      try { sessionStorage.setItem('dino_restart_alias', currentAlias || 'Jugador_0000'); } catch (e) {}
-      console.log('[RESTART] falling back to reload');
+        const alias = currentAlias || localStorage.getItem('dino_alias') || 'Jugador_0000';
+        sessionStorage.setItem('dino_restart_alias', alias);
+      } catch (e) {}
+      // Reload directo (método más confiable, ~300ms en Vercel)
       location.reload();
     };
 
