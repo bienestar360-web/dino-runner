@@ -36,7 +36,7 @@
 
     <div id="game-over-screen">
       <h2>GAME OVER</h2>
-      <p class="final">Tu puntuación: <span id="final-score-text">0</span></p>
+      <p class="final"><span id="over-alias" style="opacity:.75">?</span> · Tu puntuación: <span id="final-score-text">0</span></p>
       <div id="position-line">Calculando posición…</div>
       <h3>TOP 3 GLOBAL</h3>
       <ol id="top3-list"></ol>
@@ -137,6 +137,7 @@
     async function showGameOver(alias, score) {
       showScreen('over');
       $('final-score-text').textContent = score;
+      $('over-alias').textContent = '👤 ' + (alias || localStorage.getItem('dino_alias') || '?');
       $('position-line').textContent = 'Guardando puntuación…';
       $('rank-error').textContent = '';
       $('top3-list').innerHTML = '';
