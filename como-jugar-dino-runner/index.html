@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cómo jugar a Dino Runner: guía completa para principiantes</title>
+  <meta name="description" content="Aprende a jugar a Dino Runner desde cero: controles de teclado y táctil, objetivo real, sistema de puntos y los errores más comunes al empezar.">
+  <meta name="keywords" content="cómo jugar Dino Runner, controles Dino Runner, guía Dino Runner">
+  <link rel="canonical" href="https://mydinorun.com/como-jugar-dino-runner">
+
+  <meta property="og:title" content="Cómo jugar a Dino Runner: guía completa para principiantes">
+  <meta property="og:description" content="Aprende a jugar a Dino Runner desde cero: controles, objetivo, sistema de puntos y errores comunes.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://mydinorun.com/como-jugar-dino-runner">
+
+  <link rel="stylesheet" href="/style.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Cómo jugar a Dino Runner: guía completa para principiantes",
+    "description": "Aprende a jugar a Dino Runner desde cero: controles de teclado y táctil, objetivo real, sistema de puntos y los errores más comunes al empezar.",
+    "author": { "@type": "Organization", "name": "Dino Runner" },
+    "publisher": { "@type": "Organization", "name": "Dino Runner" },
+    "mainEntityOfPage": "https://mydinorun.com/como-jugar-dino-runner"
+  }
+  </script>
+
+  <style>
+    body.article-page { overflow: auto !important; height: auto !important; min-height: 100vh; margin: 0; background: #1a1a1a; }
+  </style>
+</head>
+<body class="article-page">
+
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="/" class="nav-brand">🦖 Dino Runner</a>
+      <a href="/">Jugar</a>
+    </nav>
+  </header>
+
+  <main class="article">
+
+    <h1>Cómo jugar a Dino Runner: guía completa para principiantes</h1>
+    <p class="article-meta">Categoría: Inicio · Guía</p>
+
+    <p>Dino Runner es un endless runner de supervivencia que se ejecuta en el navegador. No hay descarga, no hay cuenta, no hay tutorial emergente. La primera vez que abres <code>mydinorun.com</code>, el dinosaurio ya está corriendo. Esta guía cubre lo que necesitas para que la primera partida no termine en los primeros 200 puntos: qué es el juego, cómo se controla, qué puntúa y qué errores cometerás si empiezas sin contexto.</p>
+
+    <h2>Qué es Dino Runner</h2>
+    <p>Dino Runner es un juego de scroll lateral en el que controlas a un dinosaurio carnívoro que corre automáticamente hacia la derecha. El jugador no decide cuándo avanzar: el mundo se mueve solo, a una velocidad que aumenta con la puntuación. Lo único que controlas son dos acciones: saltar y agacharte.</p>
+    <p>A diferencia del Dino de Chrome —al que se parece en estética— este juego tiene un sistema de recolección y un ranking global. La carne que aparece en el camino suma +50 puntos por unidad, y cada partida se registra en un top 3 si entra en el corte. El fondo muestra un meteorito que crece a medida que avanzas, pero todavía no impacta: es una amenaza visual, no una mecánica activa.</p>
+    <p>Se juega en navegador de escritorio y en móvil. No hay versión nativa ni APK. Funciona sin conexión después de la primera carga, porque los assets están cacheados.</p>
+
+    <h2>Controles: saltar y agacharse</h2>
+    <p>Dino Runner tiene dos controles y dos formas de ejecutarlos. La siguiente tabla resume la configuración:</p>
+
+    <table>
+      <thead>
+        <tr><th>Acción</th><th>Teclado</th><th>Táctil</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Saltar</td><td>Espacio o Flecha arriba</td><td>Tap en cualquier parte de la pantalla</td></tr>
+        <tr><td>Agacharse</td><td>Flecha abajo</td><td>Swipe hacia abajo (o mantener pulsado)</td></tr>
+        <tr><td>Reiniciar</td><td>Tecla R o clic en el botón Game Over</td><td>Tap en el botón Game Over</td></tr>
+      </tbody>
+    </table>
+
+    <p>El salto tiene una altura fija y una duración de aproximadamente 600 ms. No hay salto variable: pulsar más tiempo no salta más alto. Esto simplifica el timing y hace que los patrones de enemigos sean aprendibles. El agacharse mantiene al dino en el suelo mientras se mantenga la tecla o el swipe; al soltar, se levanta.</p>
+    <p>Si el dino toca el suelo entre saltos, emite polvo detrás. Ese polvo no es decorativo: es el indicador visual de que el contacto con el piso está activo y puedes volver a saltar. Cuando el polvo desaparece, estás en el aire.</p>
+    <p>Para el detalle de controles por dispositivo, incluyendo el fix de <code>touchend</code> en móviles, consulta la guía de <a href="/controles-dino-runner-teclado-movil">controles de Dino Runner</a>.</p>
+
+    <h2>Objetivo del juego</h2>
+    <p>El objetivo no es "ganar". Es resistir. Dino Runner no tiene condición de victoria: no hay nivel final, no hay jefe, no hay pantalla de "has completado el juego". La partida termina cuando el dino choca con un obstáculo. La puntuación mide cuánto resististe antes de morir.</p>
+    <p>Esa puntuación se compone de tres fuentes:</p>
+    <ul>
+      <li><strong>Tiempo de supervivencia:</strong> puntos que se acumulan automáticamente mientras el dino está vivo.</li>
+      <li><strong>Carne recogida:</strong> +50 puntos por cada filete. Es la fuente principal de puntos en partidas largas.</li>
+      <li><strong>Power-ups:</strong> cuando aparecen, otorgan bonificaciones puntuales.</li>
+    </ul>
+    <p>La carne es el recurso central. No es una moneda: no se gasta, no se acumula entre partidas, no se convierte en nada. Es combustible de supervivencia traducido a puntos. Si ignoras la carne, sobrevives, pero no subes. Si la persigues sin control, mueres antes de tiempo.</p>
+    <p>Para el desglose completo de la fórmula, consulta el <a href="/sistema-puntuacion-dino-runner">sistema de puntuación de Dino Runner</a>.</p>
+
+    <h2>Sistema de puntos: qué cuenta y qué no</h2>
+    <p>No todo lo que se mueve en pantalla suma. La siguiente tabla separa lo que puntúa de lo que solo obstaculiza:</p>
+
+    <table>
+      <thead>
+        <tr><th>Elemento</th><th>Efecto en la puntuación</th><th>Se puede esquivar</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Carne (muslo con hueso)</td><td>+50 puntos</td><td>Sí, pero pierdes puntos</td></tr>
+        <tr><td>Tiempo vivo</td><td>+1 punto por intervalo</td><td>No, es pasivo</td></tr>
+        <tr><td>Power-ups</td><td>Variable según tipo</td><td>No aplica</td></tr>
+        <tr><td>Hongos</td><td>0 puntos, te matan</td><td>Sí, obligatorio</td></tr>
+        <tr><td>Pterodáctilos</td><td>0 puntos, te matan</td><td>Sí, obligatorio</td></tr>
+        <tr><td>Meteorito del fondo</td><td>0 puntos</td><td>No se puede tocar</td></tr>
+      </tbody>
+    </table>
+
+    <p>El meteorito no puntúa. Es el único elemento del juego que no puedes ni recoger ni esquivar: está en el fondo, crece con el score, y no interactúa con el dino. Si lo estás esquivando, estás perdiendo el tiempo.</p>
+
+    <h2>Primeros pasos: la primera partida</h2>
+    <p>Si es tu primera partida, sigue este orden:</p>
+    <ol>
+      <li><strong>Observa el primer hongo antes de saltar.</strong> La mayoría de primeras muertes ocurren por saltar demasiado pronto y caer encima del obstáculo. Salta cuando el hongo esté a una distancia que puedas cubrir con un salto completo.</li>
+      <li><strong>Recoge la primera carne si está en el camino.</strong> No hagas un salto extra para alcanzarla si eso te obliga a aterrizar sobre un hongo.</li>
+      <li><strong>No mires el meteorito.</strong> No afecta tu partida en los primeros 1,000 puntos. Mirar arriba es mirar lejos del piso, que es donde mueres.</li>
+      <li><strong>Aprende el ritmo del piso.</strong> El scroll acelera con la puntuación. En los primeros 500 puntos, el piso se mueve lento; en 3,000, ya se nota. El polvo del dino es tu referencia de velocidad.</li>
+      <li><strong>Acepta la primera muerte.</strong> No hay partida sin Game Over. El reinicio es inmediato.</li>
+    </ol>
+    <p class="article-caption">Captura de referencia: pantalla de inicio de Dino Runner en <code>mydinorun.com</code>. El dino ya está en movimiento; el jugador solo decide cuándo saltar.</p>
+
+    <h2>Errores comunes al empezar</h2>
+    <p>Los errores que más puntuación cuestan en las primeras 20 partidas:</p>
+    <ul>
+      <li><strong>Saltar por reflejo.</strong> Ver un obstáculo y pulsar espacio de inmediato suele provocar un salto que aterriza justo sobre el hongo. El timing correcto es cuando el obstáculo está a media pantalla.</li>
+      <li><strong>Ignorar el agacharse.</strong> Muchos jugadores solo usan el salto. Los pterodáctilos a baja altura exigen agacharse, no saltar. Si solo saltas, mueres en el primer ptero.</li>
+      <li><strong>Perseguir carne fuera de ruta.</strong> Un filete vale +50. Morir por perseguirlo cuesta la partida completa, que en 1,000 puntos vale más que 50.</li>
+      <li><strong>Mirar el meteorito.</strong> El meteorito no impacta todavía. Es una decisión de diseño, no una amenaza activa. Ignóralo en la primera fase.</li>
+      <li><strong>No reiniciar tras morir.</strong> El botón de Game Over reinicia la partida. En móvil, algunos navegadores requieren un tap explícito; si el botón no responde, revisa el artículo de <a href="/dino-runner-en-movil-problemas">problemas en móvil</a>.</li>
+    </ul>
+
+    <p>Para pasar de los primeros 1,000 puntos a los 5,000, la guía de <a href="/estrategia-avanzada-5000-puntos">estrategia avanzada</a> desglosa las cuatro fases del arco del juego. Para entender qué es la carne y por qué es el recurso central, la guía de <a href="/que-es-la-carne-dino-runner">la carne en Dino Runner</a> cubre el lore y la mecánica.</p>
+
+    <div class="cta">
+      <a href="/">Jugar a Dino Runner ahora →</a>
+    </div>
+
+    <div class="related">
+      <h3>Sigue leyendo</h3>
+      <ul>
+        <li><a href="/controles-dino-runner-teclado-movil">Controles de Dino Runner: teclado y táctil</a></li>
+        <li><a href="/sistema-puntuacion-dino-runner">Sistema de puntuación de Dino Runner</a></li>
+        <li><a href="/que-es-la-carne-dino-runner">Qué es la carne en Dino Runner</a></li>
+        <li><a href="/estrategia-avanzada-5000-puntos">Estrategia avanzada: 5,000 puntos</a></li>
+        <li><a href="/dino-runner-en-movil-problemas">Problemas en móvil y cómo resolverlos</a></li>
+      </ul>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2026 Dino Runner · <a href="/">Volver al juego</a></p>
+  </footer>
+
+</body>
+</html>
