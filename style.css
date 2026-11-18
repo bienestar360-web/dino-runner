@@ -491,36 +491,7 @@ body, #game-container, canvas {
   color: #e74c3c;
 }
 
-/* Móvil: el juego ocupa 100vh, los artículos van debajo con scroll natural */
-@media (max-width: 768px) {
-  .site-articles {
-    margin: 1em auto;
-    padding: 1em;
-    border-radius: 8px;
-  }
-  .site-articles h2 {
-    font-size: 1.3em;
-  }
-  .articles-list {
-    grid-template-columns: 1fr;
-    gap: 0.5em;
-  }
-  .articles-list a {
-    padding: 10px 14px;
-    font-size: 0.95em;
-  }
-}
 
-/* === SECCIÓN DE ARTÍCULOS (debajo del juego) === */
-.site-articles {
-  max-width: 900px;
-  margin: 2em auto;
-  padding: 1.5em;
-  background: #f8f9fa;
-  border-radius: 12px;
-  position: relative;
-  z-index: 100;
-}
 .site-articles h2 {
   font-size: 1.6em;
   margin-bottom: 1em;
@@ -601,16 +572,6 @@ body, #game-container, canvas {
 }
 
 
-/* === SECCIÓN DE ARTÍCULOS (debajo del juego) === */
-.site-articles {
-  max-width: 900px;
-  margin: 2em auto;
-  padding: 1.5em;
-  background: #f8f9fa;
-  border-radius: 12px;
-  position: relative;
-  z-index: 100;
-}
 .site-articles h2 {
   font-size: 1.6em;
   margin-bottom: 1em;
@@ -685,3 +646,35 @@ body, #game-container, canvas {
     font-size: 0.95em;
   }
 }
+
+/* === Página de guías === */
+.guias-page {
+  background: #1a1a1a;
+  color: #e8e8e8;
+  min-height: 100vh;
+  overflow-y: auto;
+  display: block;
+}
+.guias-page .article {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 2rem 1.2rem 4rem;
+  line-height: 1.7;
+  font-size: 1.05rem;
+  color: #e8e8e8;
+  background: #1a1a1a;
+}
+.guias-page .article h1 { color: #fff; }
+.guias-page .article h2 { color: #ffd700; margin-top: 2rem; }
+.guias-page .article a { color: #4ea8ff; text-decoration: underline; }
+.guias-page .article a:hover { color: #6fc0ff; }
+.guias-page .article ul { margin: 1rem 0; padding-left: 1.5rem; }
+.guias-page .article li { margin: 0.4rem 0; }
+.guias-page .site-header { background: #111; border-bottom: 1px solid #333; padding: 1rem 1.2rem; }
+.guias-page .site-nav { display: flex; gap: 1rem; align-items: center; max-width: 780px; margin: 0 auto; }
+.guias-page .site-nav a { color: #ffd700; text-decoration: none; font-weight: bold; font-size: 0.95rem; }
+.guias-page .site-nav .nav-brand { font-size: 1.1rem; margin-right: auto; }
+.guias-page .cta { margin: 2rem 0; padding: 1.2rem; background: #2a2a2a; border-radius: 8px; text-align: center; border: 1px solid #444; }
+.guias-page .cta a { font-size: 1.15rem; font-weight: bold; color: #ffd700; text-decoration: none; }
+.guias-page .site-footer { padding: 1.5rem 1.2rem; text-align: center; background: #111; border-top: 1px solid #333; font-size: 0.9rem; color: #888; }
+.guias-page .site-footer a { color: #4ea8ff; text-decoration: none; }
