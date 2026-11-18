@@ -454,3 +454,61 @@ body, #game-container, canvas {
 .articles-list a:hover {
   color: #e74c3c;
 }
+
+/* Fix móvil: la sección de artículos no debe tapar el juego */
+@media (max-width: 768px) {
+  .site-articles {
+    max-height: 200px;
+    overflow-y: auto;
+    margin: 1em auto;
+    padding: 1em;
+  }
+  .site-articles h2 {
+    font-size: 1.3em;
+    margin-bottom: 0.5em;
+  }
+  .articles-list {
+    grid-template-columns: 1fr;
+    gap: 0.4em;
+  }
+  .articles-list a {
+    padding: 8px 12px;
+    font-size: 0.9em;
+  }
+}
+
+/* Fix móvil v2: juego primero, artículos después con scroll */
+@media (max-width: 768px) {
+  #game-container {
+    height: 60vh !important;
+    min-height: 300px;
+    position: relative;
+    z-index: 10;
+  }
+  #game-canvas canvas {
+    max-height: 100%;
+    width: auto !important;
+    margin: 0 auto;
+    display: block;
+  }
+  .site-articles {
+    position: relative;
+    z-index: 1;
+    max-height: 40vh;
+    overflow-y: auto;
+    margin: 0.5em auto;
+    padding: 0.8em;
+  }
+  .site-articles h2 {
+    font-size: 1.2em;
+    margin-bottom: 0.4em;
+  }
+  .articles-list {
+    grid-template-columns: 1fr;
+    gap: 0.3em;
+  }
+  .articles-list a {
+    padding: 6px 10px;
+    font-size: 0.85em;
+  }
+}
