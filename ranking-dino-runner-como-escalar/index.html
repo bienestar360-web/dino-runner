@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ranking de Dino Runner: cómo escalar posiciones y llegar al top 3 — Dino Runner</title>
+  <meta name="description" content="Cómo funciona el ranking de Dino Runner, cuándo se guarda tu puntuación, cómo ver el top 3, estrategias reales para subir y por qué no aparece tu alias.">
+  <meta name="keywords" content="ranking Dino Runner, top 3 Dino Runner, puntuación global Dino Runner">
+  <link rel="canonical" href="https://mydinorun.com/ranking-dino-runner-como-escalar">
+  <link rel="stylesheet" href="/style.css?v=8">
+  <meta name="google-adsense-account" content="ca-pub-5551964617457049">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5551964617457049" crossorigin="anonymous"></script>
+</head>
+<body class="article-page">
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="/" class="nav-brand">🦖 Dino Runner</a>
+      <a href="/acerca-de">Acerca</a>
+      <a href="/politica-de-privacidad">Privacidad</a>
+      <a href="/contacto">Contacto</a>
+    </nav>
+  </header>
+
+  <main class="article-content">
+    <h1>Ranking de Dino Runner: cómo escalar posiciones y llegar al top 3</h1>
+    
+<h1>Ranking de Dino Runner: cómo escalar posiciones y llegar al top 3</h1>
+
+<p>El ranking no mide "quién es mejor jugando". Mide quién resistió más tiempo antes del impacto. Esa distinción no es narrativa: es técnica. El ranking solo cuenta el score total, no distingue entre partidas con mucha carne y partidas con poca. Esta guía explica cómo funciona, cuándo se guarda, cómo se lee el top 3 y qué estrategias funcionan de verdad para subir.</p>
+
+<h2>Cómo funciona el ranking</h2>
+
+<p>El ranking se gestiona con Supabase y almacena el top 3 global. Cada partida que entra en el corte se registra con el score y el alias del jugador. El ranking no es una tabla infinita: es un top 3, y solo el top 3 se conserva.</p>
+
+<p>Eso tiene una consecuencia práctica: no compites contra miles de jugadores, compites contra la tercera mejor puntuación registrada. Si el top 3 está en 6,200 puntos, necesitas superar 6,200 para entrar. No hay premio por quedar cuarto.</p>
+
+<p>La siguiente tabla resume las posiciones y qué implica cada una:</p>
+
+<table class="md-table">
+  <thead>
+    <tr>
+      <th>Posición</th>
+      <th>Se guarda</th>
+      <th>Se muestra</th>
+      <th>Implica</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>Sí</td>
+      <td>Sí</td>
+      <td>Mejor marca global</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Sí</td>
+      <td>Sí</td>
+      <td>Segunda mejor marca</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Sí</td>
+      <td>Sí</td>
+      <td>Tercera mejor marca</td>
+    </tr>
+    <tr>
+      <td>4+</td>
+      <td>No</td>
+      <td>No</td>
+      <td>Fuera del corte</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Cuándo se guarda tu puntuación</h2>
+
+<p>La puntuación se guarda al morir, no durante la partida. El flujo es:</p>
+
+<p>1. El dino choca con un obstáculo.</p>
+<p>2. Aparece la pantalla de Game Over.</p>
+<p>3. El juego compara tu score con el top 3 actual.</p>
+<p>4. Si tu score supera al tercero, se registra con tu alias.</p>
+<p>5. Si no lo supera, la partida se descarta.</p>
+
+<p>No hay guardado parcial ni autoguardado. Si cierras la pestaña antes del Game Over, la partida se pierde. Esto es relevante en móvil: si el navegador mata la pestaña por falta de memoria, la partida no se registra aunque hayas hecho 8,000 puntos.</p>
+
+<h2>Top 3 y cómo verlo</h2>
+
+<p>El top 3 se muestra en la pantalla de Game Over, debajo de tu score. La pantalla incluye:</p>
+
+<ul>
+  <li>Tu puntuación final.</li>
+  <li>Tu posición (o "fuera del top 3").</li>
+  <li>El top 3 con alias y score.</li>
+  <li>El botón de reinicio.</li>
+</ul>
+
+<p>Captura de referencia: pantalla de Game Over con score, posición y top 3 visible. El jugador puede reiniciar sin salir de la pantalla.</p>
+
+<p>Si el ranking está vacío (sitio nuevo o base de datos reseteada), la pantalla muestra el top 3 vacío y cualquier partida entra en el primer puesto. No hay un mínimo de puntos para entrar: la primera partida siempre entra.</p>
+
+<h2>Estrategias para subir</h2>
+
+<p>Las estrategias que funcionan en partidas reales se reducen a cinco reglas:</p>
+
+<p>1. <strong>Supera los 3,000 puntos antes de intentar el top 3.</strong> Por debajo de 3,000, la mayoría de partidas no entran en el corte. El Acto III (3,000-5,000) es donde se decide la posición.</p>
+<p>2. <strong>No arriesgues por carne en el Acto I.</strong> Los primeros 1,000 puntos son de aprendizaje. Morir ahí por perseguir un filete cuesta la partida completa.</p>
+<p>3. <strong>Juega en el mismo dispositivo.</strong> El alias se guarda en `localStorage`/`sessionStorage`. Cambiar de dispositivo cambia de alias, y el ranking no vincula cuentas.</p>
+<p>4. <strong>Repite el mismo patrón de esquivar.</strong> El ranking premia la consistencia, no la suerte. Si tu mejor partida fue 4,800, intenta replicar las decisiones de esa partida, no improvisar.</p>
+<p>5. <strong>Acepta que el corte sube.</strong> Si el top 3 está en 7,000, necesitas 7,001. No hay atajo: la única forma de subir es jugar más y mejor.</p>
+
+<p>Para el desglose de puntos que necesitas para 5,000, consulta el [sistema de puntuación](/sistema-puntuacion-dino-runner). Para la estrategia por fases, consulta la guía de estrategia avanzada.</p>
+
+<h2>Por qué no aparece tu alias</h2>
+
+<p>Si tu puntuación entra en el top 3 pero el alias no aparece, las causas habituales son:</p>
+
+<ul>
+  <li><strong>El alias no se guardó:</strong> `localStorage` está bloqueado (modo incógnito, cookies desactivadas). Solución: jugar en ventana normal.</li>
+  <li><strong>El navegador borró el storage:</strong> limpieza automática, cierre forzado. Solución: no cerrar la pestaña antes del Game Over.</li>
+  <li><strong>El ranking no recibió la escritura:</strong> error de red en el momento del Game Over. Solución: repetir la partida; el score no se recupera.</li>
+  <li><strong>El alias es genérico:</strong> el juego asigna un alias por defecto si no defines uno. Solución: revisar la guía de alias y nombres.</li>
+</ul>
+
+<p>Para ver técnicas de los mejores jugadores reales, consulta el artículo de mejores jugadores. Para volver a los fundamentos, consulta la [guía para principiantes](/como-jugar-dino-runner).</p>
+
+<p>El ranking no promete top 3 fácil. Promete que, si resistes más que el tercero, entras. Nada más.</p>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2026 Dino Runner — <a href="/politica-de-privacidad">Privacidad</a> · <a href="/contacto">Contacto</a></p>
+  </footer>
+</body>
+</html>
