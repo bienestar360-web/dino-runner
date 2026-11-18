@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dino Runner en móvil: problemas comunes y cómo resolverlos — Dino Runner</title>
+  <meta name="description" content="Problemas de Dino Runner en móvil: el juego no carga, el agacharse no responde, la puntuación no se guarda, lag y soluciones reales para cada caso.">
+  <meta name="keywords" content="Dino Runner móvil, problemas Dino Runner, Dino Runner no carga">
+  <link rel="canonical" href="https://mydinorun.com/dino-runner-en-movil-problemas">
+  <link rel="stylesheet" href="/style.css?v=8">
+  <meta name="google-adsense-account" content="ca-pub-5551964617457049">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5551964617457049" crossorigin="anonymous"></script>
+</head>
+<body class="article-page">
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="/" class="nav-brand">🦖 Dino Runner</a>
+      <a href="/acerca-de">Acerca</a>
+      <a href="/politica-de-privacidad">Privacidad</a>
+      <a href="/contacto">Contacto</a>
+    </nav>
+  </header>
+
+  <main class="article-content">
+    <h1>Dino Runner en móvil: problemas comunes y cómo resolverlos</h1>
+    
+<h1>Dino Runner en móvil: problemas comunes y cómo resolverlos</h1>
+
+<p>Dino Runner funciona en móvil, pero no siempre funciona igual que en escritorio. Esta guía recoge los problemas reales que aparecen al jugar en el teléfono, por qué ocurren y qué puedes hacer para resolverlos. No hay promesas de que todos tengan solución: algunos son limitaciones del navegador, no del juego.</p>
+
+<h2>El juego no carga en móvil</h2>
+
+<p>Si abres `mydinorun.com` en el móvil y solo ves una pantalla en blanco o el juego no arranca, las causas habituales son:</p>
+
+<table class="md-table">
+  <thead>
+    <tr>
+      <th>Causa</th>
+      <th>Síntoma</th>
+      <th>Solución</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Navegador antiguo</td>
+      <td>Pantalla en blanco, errores de consola</td>
+      <td>Actualizar el navegador</td>
+    </tr>
+    <tr>
+      <td>JavaScript desactivado</td>
+      <td>Nada se mueve</td>
+      <td>Activar JavaScript en ajustes</td>
+    </tr>
+    <tr>
+      <td>Bloqueador de anuncios agresivo</td>
+      <td>El script de AdSense falla y bloquea el arranque</td>
+      <td>Desactivar el bloqueador para este sitio</td>
+    </tr>
+    <tr>
+      <td>Conexión lenta</td>
+      <td>Carga parcial, sprites rotos</td>
+      <td>Esperar o recargar en Wi-Fi</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>El juego usa Phaser 3.80, que requiere un navegador moderno con soporte de WebGL. Navegadores muy antiguos (Android 5 o anteriores, iOS 10 o anteriores) pueden no cargar el juego.</p>
+
+<p>Para la lista completa de controles en móvil, consulta la guía de [controles de Dino Runner](/controles-dino-runner-teclado-movil).</p>
+
+<h2>El agacharse no responde en móvil</h2>
+
+<p>El agacharse en móvil es un deslizamiento hacia abajo, no un toque. Si tocas la pantalla esperando agacharte, el dino salta. Este es el error más común en móvil.</p>
+
+<p>Si deslizas y aun así no se agacha, las causas son:</p>
+
+<p>1. <strong>El deslizamiento es demasiado corto.</strong> El gesto necesita un recorrido mínimo. Desliza desde el centro de la pantalla hacia abajo, no un toque corto.</p>
+<p>2. <strong>El deslizamiento es demasiado lento.</strong> El juego detecta el gesto por velocidad. Si deslizas muy despacio, no lo registra.</p>
+<p>3. <strong>Estás tocando una zona no interactiva.</strong> En la versión actual, toda la pantalla es interactiva, pero si el juego está embebido en un iframe, el gesto puede no llegar.</p>
+
+<h2>La puntuación no se guarda</h2>
+
+<p>Si juegas en móvil y tu puntuación no aparece en el ranking, las causas son:</p>
+
+<ul>
+  <li><strong>Modo incógnito.</strong> `localStorage` está bloqueado. Solución: jugar en ventana normal.</li>
+  <li><strong>El navegador mata la pestaña.</strong> En móvil, los navegadores cierran pestañas en segundo plano para liberar memoria. Si cambias de app antes del Game Over, la partida se pierde. Solución: no cambiar de app mientras juegas.</li>
+  <li><strong>Error de red en el Game Over.</strong> El ranking usa Supabase, que requiere conexión. Si no hay red en el momento del Game Over, la puntuación no se envía. Solución: jugar con conexión estable.</li>
+</ul>
+
+<p>Para el funcionamiento del ranking, consulta la guía de [ranking de Dino Runner](/ranking-dino-runner-como-escalar).</p>
+
+<h2>Lag y rendimiento en móvil</h2>
+
+<p>El juego puede ir lento en móviles antiguos o con muchas pestañas abiertas. Las causas y soluciones:</p>
+
+<table class="md-table">
+  <thead>
+    <tr>
+      <th>Causa</th>
+      <th>Solución</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Muchas pestañas abiertas</td>
+      <td>Cerrar pestañas que no uses</td>
+    </tr>
+    <tr>
+      <td>Modo de ahorro de energía</td>
+      <td>Desactivarlo mientras juegas</td>
+    </tr>
+    <tr>
+      <td>Navegador con muchas extensiones</td>
+      <td>Usar el navegador nativo o uno limpio</td>
+    </tr>
+    <tr>
+      <td>Móvil con poca RAM</td>
+      <td>Cerrar apps en segundo plano</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>El juego no tiene un modo de calidad gráfica: usa lo que el navegador le permite. Si el móvil es muy antiguo, el juego puede ir a 30 fps en lugar de 60, lo que afecta al timing.</p>
+
+<h2>El sonido no funciona en móvil</h2>
+
+<p>El sonido de Dino Runner se activa tras la primera interacción del usuario. En móvil, algunos navegadores bloquean el audio hasta que el usuario toca la pantalla. Si el sonido no suena:</p>
+
+<p>1. Toca la pantalla una vez al inicio (esto desbloquea el audio).</p>
+<p>2. Verifica que el móvil no esté en modo silencio.</p>
+<p>3. Verifica que el navegador tenga permiso de audio.</p>
+
+<p>Si el sonido sigue sin funcionar, puede ser una limitación del navegador, no del juego. En ese caso, el juego funciona igual sin sonido.</p>
+
+<h2>Cuándo el problema es del juego y cuándo del móvil</h2>
+
+<p>La regla es simple: si el problema ocurre en todos los navegadores del móvil, es del juego. Si ocurre solo en uno, es del navegador. Si ocurre solo en tu móvil, es del móvil.</p>
+
+<p>Para reportar un problema real del juego, usa la página de [contacto](/contacto) con el modelo del móvil, el navegador y una descripción del problema. Para volver a los fundamentos, consulta la [guía para principiantes](/como-jugar-dino-runner).</p>
+
+<p>Dino Runner no promete funcionar en todos los móviles. Promete funcionar en la mayoría, y esta guía es para los que no.</p>
+
+<p>[Jugar a Dino Runner ahora →](/)</p>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2026 Dino Runner — <a href="/politica-de-privacidad">Privacidad</a> · <a href="/contacto">Contacto</a></p>
+  </footer>
+</body>
+</html>
