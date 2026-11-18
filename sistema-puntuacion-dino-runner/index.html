@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cómo funciona el sistema de puntuación en Dino Runner — Dino Runner</title>
+  <meta name="description" content="Sistema de puntuación de Dino Runner: +50 por carne, puntos por tiempo, power-ups y ranking global. Ejemplo de partida y cómo superar los 5,000 puntos.">
+  <meta name="keywords" content="puntuación Dino Runner, puntos Dino Runner, ranking Dino Runner">
+  <link rel="canonical" href="https://mydinorun.com/sistema-puntuacion-dino-runner">
+  <link rel="stylesheet" href="/style.css?v=8">
+  <meta name="google-adsense-account" content="ca-pub-5551964617457049">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5551964617457049" crossorigin="anonymous"></script>
+</head>
+<body class="article-page">
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="/" class="nav-brand">🦖 Dino Runner</a>
+      <a href="/acerca-de">Acerca</a>
+      <a href="/politica-de-privacidad">Privacidad</a>
+      <a href="/contacto">Contacto</a>
+    </nav>
+  </header>
+
+  <main class="article-content">
+    <h1>Cómo funciona el sistema de puntuación en Dino Runner</h1>
+    
+<h1>Cómo funciona el sistema de puntuación en Dino Runner</h1>
+
+<p>La puntuación de Dino Runner no es un número arbitrario. Es la suma de tres fuentes: tiempo vivo, carne recogida y power-ups. Esta guía desglosa cada una, muestra un ejemplo de partida real y explica cómo se llega a los 5,000 puntos sin inventar mecánicas que el juego no tiene.</p>
+
+<h2>Puntos por carne (+50)</h2>
+
+<p>Cada filete recogido suma +50 puntos de forma inmediata. Es la fuente de puntos más alta por evento individual y la que más peso tiene en partidas largas. En una partida de 5,000 puntos, la carne puede representar entre el 40% y el 50% del total si se recoge con consistencia.</p>
+
+<p>La carne no se acumula entre partidas ni se gasta. Se convierte en puntos en el momento de la colisión con el sprite. Para la mecánica completa, consulta la guía de [la carne en Dino Runner](/que-es-la-carne-dino-runner).</p>
+
+<h2>Puntos por tiempo</h2>
+
+<p>El tiempo vivo suma puntos de forma pasiva. La tasa exacta no está documentada en la biblia del proyecto; lo que sí es seguro es que es constante y no depende de la carne. Es la fuente de puntos que existe incluso si el jugador no recoge nada.</p>
+
+<p>En términos prácticos: si sobrevives sin recoger carne, subes, pero despacio. Si recoges carne, subes rápido. La combinación de ambas es lo que produce puntuaciones altas.</p>
+
+<h2>Puntos por power-ups</h2>
+
+<p>Los power-ups otorgan bonificaciones puntuales de valor variable según el tipo. Son escasos y no están en el camino principal, lo que los convierte en un bonus oportunista más que en una estrategia central. No están implementados de forma masiva en la versión actual; cuando aparecen, suman.</p>
+
+<h2>Multiplicadores y combinación de puntos</h2>
+
+<p>No hay multiplicadores de puntos en Dino Runner. Ningún elemento del juego duplica o triplica la puntuación de la carne o del tiempo. El único "multiplicador" del juego es la velocidad, que aumenta con el score y actúa como multiplicador de dificultad, no de puntos.</p>
+
+<p>Esto es importante para no confundir el ritmo con la puntuación: el juego se acelera, pero los puntos por filete siguen siendo +50. Lo que cambia es el riesgo de recogerlos, no su valor.</p>
+
+<h2>Cómo superar los 5,000 puntos</h2>
+
+<p>Un ejemplo de partida real de 5,000 puntos se desglosa así:</p>
+
+<table class="md-table">
+  <thead>
+    <tr>
+      <th>Fuente</th>
+      <th>Cantidad</th>
+      <th>Puntos</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Carne</td>
+      <td>30 filetes</td>
+      <td>1,500</td>
+    </tr>
+    <tr>
+      <td>Tiempo vivo</td>
+      <td>~3,500 intervalos</td>
+      <td>~3,500</td>
+    </tr>
+    <tr>
+      <td>Power-ups</td>
+      <td>0-2</td>
+      <td>0-100</td>
+    </tr>
+    <tr>
+      <td>**Total**</td>
+      <td>—</td>
+      <td>**~5,000**</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>La estrategia para llegar a 5,000 se resume en tres reglas:</p>
+
+<p>1. <strong>No mueras antes de 3,000.</strong> La mayor parte de la puntuación se acumula en el Acto III-IV. Morir en el Acto I o II deja la partida en 1,000-2,000 puntos, independientemente de la carne.</p>
+<p>2. <strong>Recoge carne sin arriesgar.</strong> 30 filetes en 5,000 puntos es una media de un filete cada 166 puntos. No necesitas ser agresivo: necesitas ser consistente.</p>
+<p>3. <strong>Aprende el timing del Acto III.</strong> Entre 3,000 y 5,000 puntos, la velocidad del juego hace que los saltos sean más cortos en tiempo real. El timing que funcionaba en 1,000 puntos ya no funciona.</p>
+
+<p>Para la estrategia completa por fases, consulta la guía de estrategia avanzada. Para el timing de cada enemigo, consulta la guía de [cómo esquivar enemigos](/como-esquivar-enemigos-dino-runner).</p>
+
+<h2>El ranking global (Supabase)</h2>
+
+<p>La puntuación se guarda en un ranking global gestionado con Supabase. Al morir, la pantalla de Game Over muestra el score, la posición y el top 3. Si el score entra en el top 3, se registra con el alias del jugador.</p>
+
+<p>El ranking no mide "quién es mejor jugando": mide quién resistió más tiempo antes del impacto. Es una distinción narrativa, pero también técnica: el ranking no distingue entre partidas con mucha carne y partidas con poca carne. Solo cuenta el total.</p>
+
+<p>Para el funcionamiento completo del ranking, consulta la guía de [ranking de Dino Runner](/ranking-dino-runner-como-escalar). Para el sistema de alias, consulta el artículo de alias y nombres. Para volver a los fundamentos, consulta la [guía para principiantes](/como-jugar-dino-runner).</p>
+
+<p>La puntuación no es un trofeo. Es el registro de cuánto resististe. Y resistir es lo único que el juego te pide.</p>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2026 Dino Runner — <a href="/politica-de-privacidad">Privacidad</a> · <a href="/contacto">Contacto</a></p>
+  </footer>
+</body>
+</html>
