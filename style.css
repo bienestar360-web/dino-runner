@@ -380,3 +380,35 @@ body, #game-container, canvas {
   .article th, .article td { padding: 0.4rem; }
   .site-nav { font-size: 0.9rem; }
 }
+
+/* === Tablas Markdown en artículos === */
+.md-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 0.95em;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.md-table thead {
+  background: #2c3e50;
+  color: #fff;
+}
+.md-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #1a252f;
+}
+.md-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #eee;
+}
+.md-table tbody tr:nth-child(even) {
+  background: #f8f9fa;
+}
+.md-table tbody tr:hover {
+  background: #eef2f7;
+}

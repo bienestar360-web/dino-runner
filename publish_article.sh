@@ -94,15 +94,55 @@ def md_to_html(md):
     lines = md.split('\n')
     out = []
     in_ul = False
+    in_table = False
+    table_rows = []
+
+    def flush_table():
+        nonlocal in_table, table_rows
+        if not in_table or not table_rows:
+            return
+        header = table_rows[0]
+        body_rows = table_rows[1:] if len(table_rows) > 1 else []
+        out.append('<table class="md-table">')
+        out.append('  <thead>')
+        out.append('    <tr>')
+        for cell in header:
+            out.append(f'      <th>{cell}</th>')
+        out.append('    </tr>')
+        out.append('  </thead>')
+        out.append('  <tbody>')
+        for row in body_rows:
+            out.append('    <tr>')
+            for cell in row:
+                out.append(f'      <td>{cell}</td>')
+            out.append('    </tr>')
+        out.append('  </tbody>')
+        out.append('</table>')
+        in_table = False
+        table_rows = []
+
     for line in lines:
         line = line.rstrip()
+
+        if line.startswith('|') and line.endswith('|'):
+            cells = [c.strip() for c in line.strip('|').split('|')]
+            if all(re.match(r'^:?-+:?$', c) for c in cells):
+                continue
+            if not in_table:
+                in_table = True
+            table_rows.append(cells)
+            continue
+        else:
+            if in_table:
+                flush_table()
+
         if not line:
             if in_ul:
                 out.append('</ul>')
                 in_ul = False
             out.append('')
             continue
-        # Headers
+
         m = re.match(r'^(#{1,6})\s+(.*)$', line)
         if m:
             if in_ul:
@@ -110,25 +150,42 @@ def md_to_html(md):
                 in_ul = False
             level = len(m.group(1))
             text = m.group(2)
-            # Si es H1 y es el título, lo dejamos como H1 del artículo
-            out.append(f'<h{level}>{text}</h{level}>')
+            out.append(f'<h{level}>{inline_format(text)}</h{level}>')
             continue
-        # Listas
+
         m = re.match(r'^[-*]\s+(.*)$', line)
         if m:
             if not in_ul:
                 out.append('<ul>')
                 in_ul = True
-            out.append(f'  <li>{m.group(1)}</li>')
+            out.append(f'  <li>{inline_format(m.group(1))}</li>')
             continue
-        # Párrafo
+
+        m = re.match(r'^\d+\.\s+(.*)$', line)
+        if m:
+            if in_ul:
+                out.append('</ul>')
+                in_ul = False
+            out.append(f'<p>{inline_format(line)}</p>')
+            continue
+
         if in_ul:
             out.append('</ul>')
             in_ul = False
-        out.append(f'<p>{line}</p>')
+        out.append(f'<p>{inline_format(line)}</p>')
+
     if in_ul:
         out.append('</ul>')
+    if in_table:
+        flush_table()
+
     return '\n'.join(out)
+
+
+def inline_format(text):
+    text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
+    text = re.sub(r'(?<!\*)\*([^*]+?)\*(?!\*)', r'<em>\1</em>', text)
+    return text
 
 html_body = md_to_html(md)
 
