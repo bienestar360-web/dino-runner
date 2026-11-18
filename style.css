@@ -455,60 +455,66 @@ body, #game-container, canvas {
   color: #e74c3c;
 }
 
-/* Fix móvil: la sección de artículos no debe tapar el juego */
+
+
+/* === Sección de artículos (fuera del game-container) === */
+.site-articles {
+  max-width: 900px;
+  margin: 2em auto;
+  padding: 1.5em;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+.site-articles h2 {
+  font-size: 1.6em;
+  margin-bottom: 1em;
+  color: #2c3e50;
+  text-align: center;
+}
+.articles-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.8em;
+}
+.articles-list li {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.articles-list li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+.articles-list a {
+  display: block;
+  padding: 14px 18px;
+  color: #2c3e50;
+  text-decoration: none;
+  font-weight: 500;
+}
+.articles-list a:hover {
+  color: #e74c3c;
+}
+
+/* Móvil: el juego ocupa 100vh, los artículos van debajo con scroll natural */
 @media (max-width: 768px) {
   .site-articles {
-    max-height: 200px;
-    overflow-y: auto;
     margin: 1em auto;
     padding: 1em;
+    border-radius: 8px;
   }
   .site-articles h2 {
     font-size: 1.3em;
-    margin-bottom: 0.5em;
   }
   .articles-list {
     grid-template-columns: 1fr;
-    gap: 0.4em;
+    gap: 0.5em;
   }
   .articles-list a {
-    padding: 8px 12px;
-    font-size: 0.9em;
-  }
-}
-
-/* Fix móvil v2: juego primero, artículos después con scroll */
-@media (max-width: 768px) {
-  #game-container {
-    height: 60vh !important;
-    min-height: 300px;
-    position: relative;
-    z-index: 10;
-  }
-  #game-canvas canvas {
-    max-height: 100%;
-    width: auto !important;
-    margin: 0 auto;
-    display: block;
-  }
-  .site-articles {
-    position: relative;
-    z-index: 1;
-    max-height: 40vh;
-    overflow-y: auto;
-    margin: 0.5em auto;
-    padding: 0.8em;
-  }
-  .site-articles h2 {
-    font-size: 1.2em;
-    margin-bottom: 0.4em;
-  }
-  .articles-list {
-    grid-template-columns: 1fr;
-    gap: 0.3em;
-  }
-  .articles-list a {
-    padding: 6px 10px;
-    font-size: 0.85em;
+    padding: 10px 14px;
+    font-size: 0.95em;
   }
 }
