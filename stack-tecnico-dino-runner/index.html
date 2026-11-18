@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El stack técnico de Dino Runner: Phaser, Vercel y Supabase — Dino Runner</title>
+  <meta name="description" content="Stack técnico de Dino Runner: Phaser 3.80 para el motor, Vercel para hosting estático, Supabase para el ranking. Por qué se eligió cada pieza y qué se descartó.">
+  <meta name="keywords" content="stack técnico Dino Runner, Phaser Dino Runner, Supabase Dino Runner">
+  <link rel="canonical" href="https://mydinorun.com/stack-tecnico-dino-runner">
+  <link rel="stylesheet" href="/style.css?v=8">
+  <meta name="google-adsense-account" content="ca-pub-5551964617457049">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5551964617457049" crossorigin="anonymous"></script>
+</head>
+<body class="article-page">
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="/" class="nav-brand">🦖 Dino Runner</a>
+      <a href="/acerca-de">Acerca</a>
+      <a href="/politica-de-privacidad">Privacidad</a>
+      <a href="/contacto">Contacto</a>
+    </nav>
+  </header>
+
+  <main class="article-content">
+    <h1>El stack técnico de Dino Runner: Phaser, Vercel y Supabase</h1>
+    
+<h1>El stack técnico de Dino Runner: Phaser, Vercel y Supabase</h1>
+
+<p>Dino Runner usa tres tecnologías principales: Phaser para el motor del juego, Vercel para el hosting estático y Supabase para el ranking global. No hay backend propio, no hay base de datos local, no hay proceso de build. Esta guía explica cada pieza, por qué se eligió y qué alternativas se descartaron.</p>
+
+<h2>Phaser 3.80: el motor del juego</h2>
+
+<p>Phaser es un framework de JavaScript para juegos 2D en navegador. Dino Runner usa Phaser 3.80 por tres razones:</p>
+
+<p>1. <strong>Es maduro.</strong> Phaser lleva más de una década en desarrollo. Tiene documentación extensa, comunidad activa y ejemplos para casi cualquier mecánica.</p>
+<p>2. <strong>Es ligero.</strong> El build de producción de Phaser pesa alrededor de 1 MB. Para un juego de scroll lateral, es más que suficiente.</p>
+<p>3. <strong>Es gratuito.</strong> Phaser es open source (MIT). No hay licencias, no hay costes por uso.</p>
+
+<p>Lo que Phaser no hace: no genera gráficos, no compone música, no gestiona el ranking. Dino Runner usa sprites procedurales (generados en código) y el ranking se gestiona con Supabase.</p>
+
+<p>Alternativas descartadas: Unity WebGL (demasiado pesado para un juego de navegador), PixiJS (más bajo nivel, requiere más código), canvas puro (reinventar la rueda).</p>
+
+<h2>Vercel: el hosting estático</h2>
+
+<p>Vercel aloja el sitio como archivos estáticos. No hay servidor dinámico: el juego se sirve como HTML, CSS y JavaScript. Esto tiene tres ventajas:</p>
+
+<p>1. <strong>Velocidad.</strong> Los archivos estáticos se sirven desde CDN, con latencia mínima.</p>
+<p>2. <strong>Simplicidad.</strong> No hay que configurar servidores, ni balanceadores, ni bases de datos.</p>
+<p>3. <strong>Despliegue automático.</strong> Cada push a GitHub despliega en producción en ~30 segundos.</p>
+
+<p>Lo que Vercel no hace: no ejecuta código de servidor (a menos que uses funciones serverless, que Dino Runner no usa). El ranking se gestiona directamente desde el navegador con Supabase.</p>
+
+<p>Alternativas descartadas: Netlify (similar, pero Vercel ya estaba configurado), GitHub Pages (sin despliegue automático desde el repo), servidor propio (complejidad innecesaria).</p>
+
+<h2>Supabase: el ranking global</h2>
+
+<p>Supabase es un backend-as-a-service basado en PostgreSQL. Dino Runner lo usa solo para el ranking: guardar el top 3 global, leerlo en el Game Over y actualizarlo cuando una partida entra en el corte.</p>
+
+<p>La tabla del ranking tiene tres columnas: alias, score y timestamp. No hay usuarios, no hay autenticación, no hay datos personales. El alias se guarda en el navegador del jugador y se envía a Supabase al morir.</p>
+
+<p>Lo que Supabase no hace en Dino Runner: no gestiona cuentas, no guarda partidas, no envía emails. Es solo una tabla de 3 filas.</p>
+
+<p>Alternativas descartadas: Firebase (más caro a escala, más complejo de configurar), backend propio con Node.js (complejidad innecesaria para 3 filas), localStorage (no es global, no compite entre jugadores).</p>
+
+<h2>Lo que no hay en el stack</h2>
+
+<p>Dino Runner no tiene:</p>
+
+<ul>
+  <li><strong>Backend propio.</strong> No hay Express, no hay Django, no hay Rails.</li>
+  <li><strong>Base de datos local.</strong> No hay SQLite, no hay IndexedDB para el ranking.</li>
+  <li><strong>Proceso de build.</strong> No hay Webpack, no hay Vite, no hay Babel. Los archivos se sirven tal cual.</li>
+  <li><strong>Sistema de autenticación.</strong> No hay login, no hay OAuth, no hay JWT.</li>
+  <li><strong>CDN propio.</strong> Vercel incluye CDN en el hosting estático.</li>
+</ul>
+
+<p>Esa ausencia es deliberada. Cada pieza que no está es una pieza que no hay que mantener.</p>
+
+<h2>Cómo se comunican las piezas</h2>
+
+<p>El flujo es simple:</p>
+
+<p>1. El jugador abre `mydinorun.com`.</p>
+<p>2. Vercel sirve `index.html`, `game.js`, `style.css` y `supabase.js`.</p>
+<p>3. Phaser arranca el juego en el navegador.</p>
+<p>4. Al morir, `supabase.js` envía el score a Supabase.</p>
+<p>5. Supabase compara con el top 3 y actualiza si corresponde.</p>
+<p>6. La pantalla de Game Over muestra el top 3 actualizado.</p>
+
+<p>No hay llamadas al servidor propias. Todo el tráfico es: navegador → Vercel (estático) y navegador → Supabase (API REST).</p>
+
+<h2>Por qué este stack y no otro</h2>
+
+<p>La decisión se resume en una frase: mínimo mantenimiento, máxima velocidad. Un juego de navegador no necesita un backend complejo. Un ranking de 3 filas no necesita una base de datos dedicada. Un sitio estático no necesita un servidor.</p>
+
+<p>Ese minimalismo tiene un coste: si Supabase cae, el ranking no funciona. Si Vercel cae, el juego no carga. Pero ambos servicios tienen SLA altos y el juego no es crítico.</p>
+
+<p>Para el futuro del juego y las mejoras pendientes, consulta el artículo de [futuro de Dino Runner](/futuro-dino-runner-roadmap). Para la historia del género, consulta el artículo de [historia del endless runner](/historia-endless-runner-genero). Para volver a los fundamentos, consulta la [guía para principiantes](/como-jugar-dino-runner).</p>
+
+<p>El stack de Dino Runner no es innovador. Es el más simple que funciona.</p>
+
+<p>[Jugar a Dino Runner ahora →](/)</p>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2026 Dino Runner — <a href="/politica-de-privacidad">Privacidad</a> · <a href="/contacto">Contacto</a></p>
+  </footer>
+</body>
+</html>
