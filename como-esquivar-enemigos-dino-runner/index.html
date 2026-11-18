@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cómo esquivar todos los enemigos de Dino Runner — Dino Runner</title>
+  <meta name="description" content="Guía de enemigos de Dino Runner: hongos, pterodáctilos y obstáculos. Cuándo saltar, cuándo agacharse, patrones de aparición y timing exacto.">
+  <meta name="keywords" content="esquivar enemigos Dino Runner, hongos Dino Runner, pterodáctilos Dino Runner">
+  <link rel="canonical" href="https://mydinorun.com/como-esquivar-enemigos-dino-runner">
+  <link rel="stylesheet" href="/style.css?v=8">
+  <meta name="google-adsense-account" content="ca-pub-5551964617457049">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5551964617457049" crossorigin="anonymous"></script>
+</head>
+<body class="article-page">
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="/" class="nav-brand">🦖 Dino Runner</a>
+      <a href="/acerca-de">Acerca</a>
+      <a href="/politica-de-privacidad">Privacidad</a>
+      <a href="/contacto">Contacto</a>
+    </nav>
+  </header>
+
+  <main class="article-content">
+    <h1>Cómo esquivar todos los enemigos de Dino Runner</h1>
+    
+<h1>Cómo esquivar todos los enemigos de Dino Runner</h1>
+
+<p>En Dino Runner hay tres tipos de enemigos y dos formas de esquivarlos. La mayoría de jugadores solo usa el salto, y eso explica por qué mueren en el primer pterodáctilo. Esta guía desglosa cada enemigo, cuándo usar cada control y el timing que funciona en partidas reales.</p>
+
+<h2>Los 3 tipos de enemigos</h2>
+
+<p>El juego tiene tres categorías de obstáculo, y cada una exige una respuesta distinta:</p>
+
+<table class="md-table">
+  <thead>
+    <tr>
+      <th>Enemigo</th>
+      <th>Forma</th>
+      <th>Respuesta</th>
+      <th>Altura</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Hongo</td>
+      <td>Obstáculo terrestre</td>
+      <td>Saltar</td>
+      <td>Suelo</td>
+    </tr>
+    <tr>
+      <td>Pterodáctilo</td>
+      <td>Obstáculo aéreo</td>
+      <td>Agacharse o saltar (según altura)</td>
+      <td>Variable</td>
+    </tr>
+    <tr>
+      <td>Obstáculo genérico</td>
+      <td>Bloque terrestre</td>
+      <td>Saltar</td>
+      <td>Suelo</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>El hongo es el enemigo más común. Aparece a ras de suelo y se esquiva saltando. El pterodáctilo aparece a dos alturas: si vuela bajo, se esquiva agachándose; si vuela alto, se esquiva saltando o simplemente corriendo por debajo. El obstáculo genérico es un bloque terrestre que se comporta como el hongo.</p>
+
+<h2>Cuándo saltar y cuándo agacharse</h2>
+
+<p>La regla es simple pero se incumple constantemente:</p>
+
+<ul>
+  <li><strong>Salta cuando el obstáculo está en el suelo.</strong> Hongos y bloques.</li>
+  <li><strong>Agáchate cuando el obstáculo está a media altura.</strong> Pterodáctilos bajos.</li>
+  <li><strong>No hagas nada cuando el obstáculo está alto.</strong> Pterodáctilos altos pasan por encima del dino sin colisión.</li>
+</ul>
+
+<p>El error más caro es saltar un pterodáctilo bajo. El salto tiene una altura fija de aproximadamente 600 ms de duración; si el ptero está a media altura, el dino sube y choca de frente. El agacharse lo deja pasar por debajo.</p>
+
+<p>Para el detalle de cada control por dispositivo, consulta la guía de controles de Dino Runner.</p>
+
+<h2>Patrones de aparición</h2>
+
+<p>Los enemigos no aparecen al azar. El juego usa una función de spawn que programa el siguiente obstáculo entre 1,200 y 2,800 ms después del anterior. Esto tiene tres consecuencias prácticas:</p>
+
+<p>1. <strong>Nunca hay dos enemigos simultáneos en el mismo carril.</strong> El spawn es secuencial.</p>
+<p>2. <strong>El intervalo mínimo es 1,200 ms.</strong> Eso da tiempo a un salto completo (600 ms) y a aterrizar antes del siguiente.</p>
+<p>3. <strong>El intervalo máximo es 2,800 ms.</strong> En ese hueco aparecen la carne y los power-ups.</p>
+
+<p>La siguiente tabla muestra el intervalo y lo que puedes hacer en él:</p>
+
+<table class="md-table">
+  <thead>
+    <tr>
+      <th>Intervalo</th>
+      <th>Duración</th>
+      <th>Acción posible</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Mínimo</td>
+      <td>1,200 ms</td>
+      <td>Saltar, aterrizar, preparar el siguiente</td>
+    </tr>
+    <tr>
+      <td>Medio</td>
+      <td>~2,000 ms</td>
+      <td>Saltar, recoger carne, aterrizar</td>
+    </tr>
+    <tr>
+      <td>Máximo</td>
+      <td>2,800 ms</td>
+      <td>Saltar, recoger carne, agacharse, aterrizar</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Timing exacto</h2>
+
+<p>El timing del salto no se mide en milisegundos, se mide en distancia en pantalla. La regla que funciona:</p>
+
+<ul>
+  <li><strong>Salta cuando el obstáculo esté a media pantalla.</strong> No cuando aparece, no cuando está encima.</li>
+  <li><strong>Si dudas, salta tarde.</strong> Un salto tardío aterriza antes del obstáculo; un salto temprano aterriza encima.</li>
+  <li><strong>El polvo del dino es tu referencia.</strong> Si el polvo está activo, el dino toca el suelo y puedes saltar. Si no hay polvo, está en el aire.</li>
+</ul>
+
+<p>Para el pterodáctilo bajo, la regla es la inversa: agáchate cuando el ptero esté a un tercio de pantalla. Agacharse antes no ayuda; agacharse tarde es colisión.</p>
+
+<h2>Ejercicios para practicar</h2>
+
+<p>Estos ejercicios funcionan en partidas reales y se pueden practicar en sesiones de 10 minutos:</p>
+
+<p>1. <strong>Solo saltos (partidas 1-3):</strong> ignora la carne, ignora el score. Salta cada hongo y aterriza antes del siguiente. Objetivo: 1,000 puntos sin morir por salto temprano.</p>
+<p>2. <strong>Solo agacharse (partidas 4-6):</strong> busca pteros bajos y agáchate. Objetivo: sobrevivir 500 puntos sin usar el salto.</p>
+<p>3. <strong>Combinado (partidas 7-10):</strong> salta hongos, agáchate ante pteros bajos, ignora pteros altos. Objetivo: 2,000 puntos.</p>
+<p>4. <strong>Con carne (partidas 11+):</strong> añade recolección sin romper el timing. Objetivo: 3,000 puntos con 15+ filetes.</p>
+
+<p>Para entender el ritmo del piso y cómo anticipar enemigos con el scroll, consulta la guía de polvo y piso. Para la estrategia completa por fases, consulta la guía de estrategia avanzada. Para volver a los fundamentos, consulta la [guía para principiantes](/como-jugar-dino-runner).</p>
+
+<p>Esquivar no es reflejo. Es timing aprendido. Y el timing se entrena con repetición, no con suerte.</p>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2026 Dino Runner — <a href="/politica-de-privacidad">Privacidad</a> · <a href="/contacto">Contacto</a></p>
+  </footer>
+</body>
+</html>
