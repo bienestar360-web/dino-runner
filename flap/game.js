@@ -10,12 +10,16 @@ class DinoFlap extends Phaser.Scene {
     }
 
     init() {
+        this.mode = new URLSearchParams(window.location.search).get('mode') || 'normal';
         this.score = 0;
         this.gameOver = false;
         this.jumpPower = -420;
         this.gravity = 1200;
-        this.pipeSpeed = 180;
+        this.pipeSpeed = this.mode === 'leyenda' ? 280 : 180;
+        this.pipeSpawnDelay = this.mode === 'leyenda' ? 1200 : 1600;
+        this.pointsPerColumn = this.mode === 'leyenda' ? 2 : 1;
         this.nextPipeScore = 0;
+        console.log('[FLAP] Modo:', this.mode);
     }
 
     preload() {
@@ -123,7 +127,7 @@ class DinoFlap extends Phaser.Scene {
 
         // Spawner de columnas
         this.spawnTimer = this.time.addEvent({
-            delay: 1600,
+            delay: this.pipeSpawnDelay,
             callback: this.spawnPipe,
             callbackScope: this,
             loop: true
@@ -187,7 +191,7 @@ class DinoFlap extends Phaser.Scene {
             // Puntuación al pasar la columna
             if (pipe.getData('scored') === false && pipe.x < this.player.x) {
                 pipe.setData('scored', true);
-                this.score++;
+                this.score += this.pointsPerColumn;
                 this.scoreText.setText(this.score);
             }
         });

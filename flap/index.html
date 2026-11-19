@@ -19,6 +19,10 @@
     <div id="game-canvas"></div>
     <div id="start-screen">
       <h1>🦖 Dino Flap: Escape del Caos</h1>
+      <div class="mode-selector" style="margin: 10px 0;">
+        <button class="mode-btn active" data-mode="normal">Clásico</button>
+        <button class="mode-btn" data-mode="leyenda">🔥 Leyenda</button>
+      </div>
       <p>El pterodáctilo escapa del meteorito. Un toque para volar.</p>
       <input type="text" id="alias-input" maxlength="15" placeholder="Alias" autocomplete="off">
       <div class="btn-row">
@@ -80,7 +84,8 @@
     document.getElementById('restart-btn').onclick = () => {
       const alias = currentAlias || localStorage.getItem('dino_alias') || 'Jugador_0000';
       try { sessionStorage.setItem('dino_restart_alias', alias); } catch(e) {}
-      location.href = location.pathname + '?r=' + Date.now();
+      const _mode = new URLSearchParams(window.location.search).get('mode') || 'normal';
+      location.href = location.pathname + (_mode !== 'normal' ? '?mode=' + _mode + '&r=' : '?r=') + Date.now();
     };
 
     // Inicio
@@ -100,5 +105,24 @@
       if (savedAlias) document.getElementById('alias-input').value = savedAlias;
     } catch(e) {}
   </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const modeBtns = document.querySelectorAll('.mode-btn');
+      const urlMode = new URLSearchParams(window.location.search).get('mode') || 'normal';
+      modeBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === urlMode);
+        btn.addEventListener('click', () => {
+          const mode = btn.dataset.mode;
+          if (mode === 'normal') {
+            window.location.href = '/flap/';
+          } else {
+            window.location.href = '/flap/?mode=' + mode;
+          }
+        });
+      });
+    });
+  </script>
+
 </body>
 </html>
