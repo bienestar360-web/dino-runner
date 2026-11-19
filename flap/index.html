@@ -116,13 +116,63 @@
         btn.addEventListener('click', () => {
           const mode = btn.dataset.mode;
           if (mode === 'normal') {
-            window.location.href = '/flap/';
+            window.location.href = '/flap/index.html';
           } else {
-            window.location.href = '/flap/?mode=' + mode;
+            window.location.href = '/flap/index.html?mode=' + mode;
           }
         });
       });
     });
+  </script>
+
+
+  <script>
+    // Fallback móvil: touchend + pointerup (igual que el runner)
+    (function() {
+      function attach() {
+        const restartBtn = document.getElementById('restart-btn');
+        const homeBtn = document.getElementById('home-btn');
+        if (!restartBtn || !homeBtn) { setTimeout(attach, 200); return; }
+
+        let __restarting = false;
+        const restartHandler = (ev) => {
+          if (__restarting) return;
+          __restarting = true;
+          if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+          console.log('[RESTART-FALLBACK] triggered');
+          const alias = (typeof currentAlias !== 'undefined' && currentAlias)
+                     || localStorage.getItem('dino_alias') || 'Jugador_0000';
+          try { sessionStorage.setItem('dino_restart_alias', alias); } catch(e) {}
+          const mode = new URLSearchParams(window.location.search).get('mode') || 'normal';
+          const url = location.pathname + (mode !== 'normal' ? '?mode=' + mode + '&r=' : '?r=') + Date.now();
+          console.log('[RESTART-FALLBACK] ->', url);
+          location.href = url;
+          setTimeout(() => { __restarting = false; }, 2000);
+        };
+
+        let __homeGoing = false;
+        const homeHandler = (ev) => {
+          if (__homeGoing) return;
+          __homeGoing = true;
+          if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+          console.log('[HOME-FALLBACK] triggered');
+          try { sessionStorage.removeItem('dino_restart_alias'); } catch(e) {}
+          location.href = '/';
+          setTimeout(() => { __homeGoing = false; }, 2000);
+        };
+
+        restartBtn.addEventListener('touchend', restartHandler, { passive: false });
+        restartBtn.addEventListener('pointerup', restartHandler);
+        homeBtn.addEventListener('touchend', homeHandler, { passive: false });
+        homeBtn.addEventListener('pointerup', homeHandler);
+        console.log('[FALLBACK] restart + home attached');
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', attach);
+      } else {
+        attach();
+      }
+    })();
   </script>
 
 </body>
