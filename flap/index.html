@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dino Flap: Escape del Caos — Dino Runner</title>
+  <meta name="description" content="Dino Flap: Escape del Caos. El pterodáctilo vuela esquivando columnas de meteorito. Un juego de un solo toque basado en Dino Runner.">
+  <link rel="canonical" href="https://mydinorun.com/flap">
+  <link rel="stylesheet" href="style.css?v=1">
+  <meta name="google-adsense-account" content="ca-pub-5551964617457049">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5551964617457049" crossorigin="anonymous"></script>
+  <script>
+    window.adsbygoogle = window.adsbygoogle || [];
+    var adBreak = adConfig = function(o) { adsbygoogle.push(o); };
+  </script>
+</head>
+<body class="article-page" style="background:#1d1f24;">
+  <div id="game-container">
+    <div id="game-canvas"></div>
+    <div id="start-screen">
+      <h1>🦖 Dino Flap: Escape del Caos</h1>
+      <p>El pterodáctilo escapa del meteorito. Un toque para volar.</p>
+      <input type="text" id="alias-input" maxlength="15" placeholder="Alias" autocomplete="off">
+      <div class="btn-row">
+        <button id="start-btn">Jugar</button>
+      </div>
+      <p class="start-links" style="margin-top:12px;">
+        <a href="/">Volver a Dino Runner</a>
+        <a href="/guias">📚 Guías</a>
+      </p>
+    </div>
+    <div id="game-over-screen">
+      <h2>GAME OVER</h2>
+      <p class="final"><span id="over-alias">?</span> · Columnas: <span id="final-score-text">0</span></p>
+      <div id="position-line">Calculando posición…</div>
+      <h3>TOP 3 GLOBAL</h3>
+      <ol id="top3-list"></ol>
+      <p id="rank-error" class="error"></p>
+      <div class="btn-row">
+        <button id="restart-btn">Reiniciar</button>
+        <button id="home-btn" class="ghost">🏠 Inicio</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="supabase.js"></script>
+  <script src="game.js"></script>
+  <script>
+    // Gestión de pantallas y botones (similar al runner)
+    let currentAlias = localStorage.getItem('dino_alias') || '';
+
+    function showScreen(which) {
+      ['start-screen','game-over-screen'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+      const el = document.getElementById(which);
+      if (el) el.style.display = 'flex';
+    }
+
+    async function onStartClick() {
+      const input = document.getElementById('alias-input');
+      let alias = (input.value || '').trim();
+      if (!alias) alias = `Jugador_${Math.floor(1000 + Math.random() * 9000)}`;
+      currentAlias = alias;
+      try { localStorage.setItem('dino_alias', alias); } catch(e) {}
+      document.getElementById('start-screen').style.display = 'none';
+      window.startGame(alias);
+    }
+
+    document.getElementById('start-btn').onclick = onStartClick;
+    document.getElementById('random-btn')?.addEventListener('click', () => {
+      document.getElementById('alias-input').value = `Jugador_${Math.floor(1000 + Math.random() * 9000)}`;
+    });
+
+    // Reiniciar (con preservación de modo, aunque Flap no tiene modos)
+    document.getElementById('restart-btn').onclick = () => {
+      const alias = currentAlias || localStorage.getItem('dino_alias') || 'Jugador_0000';
+      try { sessionStorage.setItem('dino_restart_alias', alias); } catch(e) {}
+      location.href = location.pathname + '?r=' + Date.now();
+    };
+
+    // Inicio
+    document.getElementById('home-btn').onclick = () => {
+      try {
+        sessionStorage.removeItem('dino_restart_alias');
+      } catch(e) {}
+      location.href = '/';
+    };
+
+    // Al cargar, mostrar start
+    showScreen('start-screen');
+
+    // Precargar alias
+    try {
+      const savedAlias = localStorage.getItem('dino_alias');
+      if (savedAlias) document.getElementById('alias-input').value = savedAlias;
+    } catch(e) {}
+  </script>
+</body>
+</html>

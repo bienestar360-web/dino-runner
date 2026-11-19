@@ -59,6 +59,19 @@
           <a href="/acerca-de">Acerca</a>
         </p>
       </div>
+
+      <!-- Sección MÁS JUEGOS -->
+      <div class="start-section">
+        <h2 class="start-section-title">🕹️ Más juegos</h2>
+        <div class="more-games">
+          <a href="/flap" class="game-card">
+            <span class="game-card-icon">🦖</span>
+            <span class="game-card-title">Dino Flap</span>
+            <span class="game-card-desc">Escape del Caos</span>
+          </a>
+        </div>
+      </div>
+
       <p id="alias-error" class="error"></p>
     </div>
 
@@ -256,6 +269,7 @@
     };
 
     $('home-btn').onclick = () => {
+      try { sessionStorage.removeItem('dino_restart_alias'); } catch (e) {}
       location.href = '/';
     };
 
