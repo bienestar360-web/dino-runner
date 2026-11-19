@@ -3,8 +3,16 @@ class DinoGame extends Phaser.Scene {
     constructor(alias) { super('DinoGame'); this.alias = alias || 'Jugador_0000'; }
 
     init() {
+        // Leer el modo de la URL (ej: ?mode=supervivencia)
+        const urlParams = new URLSearchParams(window.location.search);
+        this.mode = urlParams.get('mode') || 'normal';
+        console.log('[GAME] Modo:', this.mode);
+
         this.score = 0;
         this.speed = 4.5;
+        if (this.mode === 'rapido') this.speed = 9.0;
+        if (this.mode === 'leyenda') this.speed = 9.0;
+        if (this.mode === 'lento') this.speed = 2.5;
         this.gameOver = false;
         this.isGhost = false;
         this.isMagnet = false;
@@ -384,7 +392,10 @@ class DinoGame extends Phaser.Scene {
 
     spawnNext() {
         if (this.gameOver) return;
-        this.spawnTimer = this.time.delayedCall(Phaser.Math.Between(1200, 2800), () => {
+        const _isLeyenda = this.mode === 'leyenda';
+        const _spawnMin = _isLeyenda ? 600 : 1200;
+        const _spawnMax = _isLeyenda ? 1400 : 2800;
+        this.spawnTimer = this.time.delayedCall(Phaser.Math.Between(_spawnMin, _spawnMax), () => {
             if (this.gameOver) return;
             this.spawnEnemy();
             this.spawnNext();
@@ -411,7 +422,8 @@ class DinoGame extends Phaser.Scene {
         if (this.gameOver) return;
         this.collectTimer = this.time.delayedCall(Phaser.Math.Between(800, 1500), () => {
             if (this.gameOver) return;
-            this.spawnCollectible();
+            const _mode = (new URLSearchParams(window.location.search)).get('mode') || 'normal';
+            if (_mode !== 'supervivencia') this.spawnCollectible();
             this.spawnNextCollectible();
         });
     }
@@ -494,7 +506,7 @@ class DinoGame extends Phaser.Scene {
     collectItem(player, item) {
         const type = item.getData('type');
         item.destroy();
-        if (type === 'meat') { this.score += 50; SoundFX.coin(); }
+        if (type === 'meat') { this.score += (this.mode === 'leyenda' ? 100 : 50); SoundFX.coin(); }
         else if (type === 'star') { this.activateGhost(); }
         else if (type === 'magnet') { this.activateMagnet(); }
         else if (type === 'heart') { this.lives++; this.updateLivesText(); SoundFX.extraLife(); }
@@ -552,7 +564,8 @@ class DinoGame extends Phaser.Scene {
         if (this.groundVisual) this.groundVisual.tilePositionX += 5;
         // Meteorito creciendo con el score (0.12 → 1.2 en 10000 pts)
         if (this.meteor) {
-            const s = Math.min(1.2, 0.12 + (this.score / 10000) * 1.08);
+            const _meteorDiv = this.mode === 'meteorito' ? 5000 : 10000;
+            const s = Math.min(1.2, 0.12 + (this.score / _meteorDiv) * 1.08);
             this.meteor.setScale(s);
             this.meteor.x = this.scale.width - 100 - (s - 0.12) * 35;
         }
@@ -571,7 +584,8 @@ class DinoGame extends Phaser.Scene {
         const dt = delta / 1000;
         const w = this.scale.width;
 
-        this.score += dt * 10 * this.speed;
+        const _mode2 = (new URLSearchParams(window.location.search)).get('mode') || 'normal';
+        if (_mode2 !== 'carnivoro') this.score += dt * 10 * this.speed;
         this.speed += dt * 0.05;
 
         // Vida extra cada 20k

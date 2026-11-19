@@ -808,3 +808,52 @@ body.article-page .site-footer a { color: #4ea8ff; text-decoration: none; }
     margin: 4px 0 8px;
   }
 }
+
+/* === Selector de modos del runner === */
+.mode-selector {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.mode-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 2px solid #3a4454;
+  background: transparent;
+  color: #9aa4b2;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: all 0.15s ease;
+}
+.mode-btn:hover {
+  border-color: #4cc2ff;
+  color: #4cc2ff;
+}
+.mode-btn.active {
+  border-color: #4cc2ff;
+  background: rgba(76, 194, 255, 0.15);
+  color: #4cc2ff;
+}
+
+/* === Secciones del start-screen === */
+.start-section {
+  margin: 12px 0;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  width: 100%;
+  max-width: 420px;
+}
+.start-section-title {
+  font-size: 0.85rem;
+  color: #9aa4b2;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0 0 8px;
+  text-align: center;
+}

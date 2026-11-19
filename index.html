@@ -26,19 +26,38 @@
     <div id="game-canvas"></div>
     <div id="start-screen">
       <h1>🦖 Dino Runner</h1>
-      <p class="start-links">
-        <a href="/guias">📚 Guías</a>
-        <a href="/como-jugar-dino-runner">Cómo jugar</a>
-        <a href="/estrategia-avanzada-5000-puntos">Estrategia</a>
-        <a href="/ranking-dino-runner-como-escalar">Ranking</a>
-        <a href="/acerca-de">Acerca</a>
-      </p>
-      <p style="margin-bottom: 8px;"><a href="/guias" style="color: #4cc2ff; text-decoration: none; font-weight: 600;">📚 Ver todas las guías →</a></p>
+
+      <!-- Sección JUEGOS -->
+      <div class="start-section">
+        <h2 class="start-section-title">🎮 Juegos</h2>
+        <div class="mode-selector">
+          <button class="mode-btn active" data-mode="normal">Clásico</button>
+          <button class="mode-btn" data-mode="supervivencia">Supervivencia</button>
+          <button class="mode-btn" data-mode="carnivoro">Carnívoro</button>
+          <button class="mode-btn" data-mode="rapido">⚡ Rápido</button>
+          <button class="mode-btn" data-mode="lento">🐢 Lento</button>
+          <button class="mode-btn" data-mode="meteorito">☄️ Meteorito</button>
+          <button class="mode-btn" data-mode="leyenda">🔥 Leyenda</button>
+        </div>
+      </div>
+
       <p>Elige tu alias (déjalo vacío para uno aleatorio)</p>
       <input type="text" id="alias-input" maxlength="15" placeholder="Alias" autocomplete="off">
       <div class="btn-row">
         <button id="start-btn">Jugar</button>
         <button id="random-btn" class="ghost">Aleatorio</button>
+      </div>
+
+      <!-- Sección GUÍAS -->
+      <div class="start-section">
+        <h2 class="start-section-title">📚 Guías</h2>
+        <p class="start-links">
+          <a href="/guias">Todas las guías</a>
+          <a href="/como-jugar-dino-runner">Cómo jugar</a>
+          <a href="/estrategia-avanzada-5000-puntos">Estrategia</a>
+          <a href="/ranking-dino-runner-como-escalar">Ranking</a>
+          <a href="/acerca-de">Acerca</a>
+        </p>
       </div>
       <p id="alias-error" class="error"></p>
     </div>
@@ -62,7 +81,7 @@
       <p id="rank-error" class="error"></p>
       <div class="btn-row">
         <button id="restart-btn">Reiniciar</button>
-        <button id="home-btn" class="ghost">Cambiar alias</button>
+        <button id="home-btn" class="ghost">🏠 Inicio</button>
       </div>
     </div>
   </div>
@@ -71,7 +90,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="config.js?v=8"></script>
   <script src="supabase.js?v=8"></script>
-  <script src="game.js?v=8"></script>
+  <script src="game.js?v=10"></script>
   <script>
 
     // === HELPERS DE DISPLAY (fuerzan visibilidad con !important) ===
@@ -232,14 +251,12 @@
         const alias = currentAlias || localStorage.getItem('dino_alias') || 'Jugador_0000';
         sessionStorage.setItem('dino_restart_alias', alias);
       } catch (e) {}
-      location.href = location.pathname + '?r=' + Date.now();
+      const _mode = new URLSearchParams(window.location.search).get('mode') || 'normal';
+        location.href = location.pathname + (_mode !== 'normal' ? '?mode=' + _mode + '&r=' : '?r=') + Date.now();
     };
 
     $('home-btn').onclick = () => {
-      if (window.currentGame) { try { window.currentGame.destroy(true); } catch (e) {} window.currentGame = null; }
-      currentAlias = null;
-      $('alias-input').value = '';
-      showScreen('start');
+      location.href = '/';
     };
 
     // === AUTO-RESTART o pantalla de inicio ===
@@ -304,6 +321,36 @@
   })();
 
 </script>
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const modeBtns = document.querySelectorAll('.mode-btn');
+      modeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          modeBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const mode = btn.dataset.mode;
+          if (mode === 'normal') {
+            window.location.href = '/';
+          } else {
+            window.location.href = '/?mode=' + mode;
+          }
+        });
+      });
+    });
+  </script>
+
+
+  <script>
+    // Marcar el botón del modo activo según la URL
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlMode = new URLSearchParams(window.location.search).get('mode') || 'normal';
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === urlMode);
+      });
+    });
+  </script>
 
 </body>
 </html>
