@@ -11,15 +11,21 @@ class DinoFlap extends Phaser.Scene {
 
     init() {
         this.mode = new URLSearchParams(window.location.search).get('mode') || 'normal';
+        const MODES = {
+            normal:   { speed: 180, spawn: 1600, points: 1 },
+            leyenda:  { speed: 280, spawn: 1200, points: 2 },
+            lento:    { speed: 120, spawn: 2000, points: 1 }
+        };
+        const cfg = MODES[this.mode] || MODES.normal;
         this.score = 0;
         this.gameOver = false;
         this.jumpPower = -420;
         this.gravity = 1200;
-        this.pipeSpeed = this.mode === 'leyenda' ? 280 : 180;
-        this.pipeSpawnDelay = this.mode === 'leyenda' ? 1200 : 1600;
-        this.pointsPerColumn = this.mode === 'leyenda' ? 2 : 1;
+        this.pipeSpeed = cfg.speed;
+        this.pipeSpawnDelay = cfg.spawn;
+        this.pointsPerColumn = cfg.points;
         this.nextPipeScore = 0;
-        console.log('[FLAP] Modo:', this.mode);
+        console.log('[FLAP] Modo:', this.mode, cfg);
     }
 
     preload() {
