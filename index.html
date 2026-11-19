@@ -304,7 +304,8 @@
           sessionStorage.setItem('dino_restart_alias', alias);
           console.log('[RESTART-FALLBACK] alias saved:', alias);
         } catch (e) { console.warn('[RESTART-FALLBACK] sessionStorage failed:', e); }
-        const url = location.pathname + '?r=' + Date.now();
+        const _mode = new URLSearchParams(window.location.search).get('mode') || 'normal';
+        const url = location.pathname + (_mode !== 'normal' ? '?mode=' + _mode + '&r=' : '?r=') + Date.now();
         console.log('[RESTART-FALLBACK] redirecting to:', url);
         location.href = url;
         setTimeout(() => { __restarting = false; }, 2000);
@@ -312,6 +313,23 @@
       btn.addEventListener('touchend', handler, { passive: false });
       btn.addEventListener('pointerup', handler);
       console.log('[RESTART-FALLBACK] touchend + pointerup attached');
+
+      // Fallback móvil para home-btn
+      const homeBtn = document.getElementById('home-btn');
+      if (homeBtn) {
+        let __homeGoing = false;
+        const homeHandler = (ev) => {
+          if (__homeGoing) return;
+          __homeGoing = true;
+          if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+          console.log('[HOME-FALLBACK] touchend/pointerup triggered');
+          location.href = '/';
+          setTimeout(() => { __homeGoing = false; }, 2000);
+        };
+        homeBtn.addEventListener('touchend', homeHandler, { passive: false });
+        homeBtn.addEventListener('pointerup', homeHandler);
+        console.log('[HOME-FALLBACK] touchend + pointerup attached');
+      }
     }
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', attach);
