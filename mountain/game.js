@@ -416,7 +416,8 @@ class DinoMountain extends Phaser.Scene {
         // Cámara
         this.cameras.main.setBackgroundColor(0x1a1a2e);
         this.cameras.main.scrollX = this.player.x - w * 0.25;
-        this.cameras.main.scrollY = this.player.y - h * 0.75;
+        this.camFocusY = this.player.y;
+        this.cameras.main.scrollY = this.camFocusY - h * 0.65;
 
         // HUD
         this.scoreText = this.add.text(w/2, 20, '0', {
@@ -878,12 +879,13 @@ class DinoMountain extends Phaser.Scene {
         // Gravedad manual
         this.player.body.velocity.y += this.gravity * dt;
 
-        // Cámara X sigue al jugador; Y solo sube (monotónica)
+        // Cámara X sigue al jugador; Y sigue el suelo
         this.cameras.main.scrollX = this.player.x - w * 0.25;
-        const targetScrollY = this.player.y - h * 0.75;
-        if (targetScrollY < this.cameras.main.scrollY) {
-            this.cameras.main.scrollY = targetScrollY;
-        }
+        // Y: sigue el suelo donde esta apoyado (sube y baja), sin seguir el apice del salto
+        const grounded = this.player.body.blocked.down || this.player.body.touching.down;
+        if (grounded) this.camFocusY = this.player.y;
+        const targetScrollY = this.camFocusY - h * 0.65;
+        this.cameras.main.scrollY += (targetScrollY - this.cameras.main.scrollY) * Math.min(1, 8 * dt);
 
         this.updateBackdrop();
 
