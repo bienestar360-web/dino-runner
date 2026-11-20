@@ -440,10 +440,7 @@ class DinoMountain extends Phaser.Scene {
 
         try {
             const top3 = await obtenerTop3();
-            const list = document.getElementById('top3-list');
-            list.innerHTML = top3.map((r, i) =>
-                `<li class="rank-item ${i===0?'first':''}"><span class="rank-alias">${r.alias}</span><span class="rank-score">${r.score}</span></li>`
-            ).join('');
+            window.renderTop3('top3-list', top3);
         } catch(e) {}
 
         try {

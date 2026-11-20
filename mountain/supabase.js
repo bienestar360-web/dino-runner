@@ -1,3 +1,5 @@
+const LB_TABLE = 'leaderboard_mountain';
+
 let supabaseClient = null;
 
 function initSupabase() {
@@ -11,7 +13,7 @@ function initSupabase() {
 async function verificarAlias(alias) {
     const client = initSupabase();
     const { data, error } = await client
-        .from('leaderboard')
+        .from(LB_TABLE)
         .select('alias')
         .eq('alias', alias)
         .maybeSingle();
@@ -27,7 +29,7 @@ async function asignarAliasDefault() {
         const alias = `${CONFIG.defaultAliasPrefix}_${num}`;
         if (await verificarAlias(alias)) continue;
         const { data, error } = await client
-            .from('leaderboard')
+            .from(LB_TABLE)
             .insert({ alias, score: 0 })
             .select()
             .single();
@@ -44,7 +46,7 @@ async function asignarAliasDefault() {
 async function enviarPuntuacion(alias, score) {
     const client = initSupabase();
     const { data: prev, error: readErr } = await client
-        .from('leaderboard')
+        .from(LB_TABLE)
         .select('score')
         .eq('alias', alias)
         .maybeSingle();
@@ -52,7 +54,7 @@ async function enviarPuntuacion(alias, score) {
 
     if (!prev) {
         const { data, error } = await client
-            .from('leaderboard')
+            .from(LB_TABLE)
             .insert({ alias, score })
             .select()
             .single();
@@ -62,7 +64,7 @@ async function enviarPuntuacion(alias, score) {
     if (score <= prev.score) return { alias, score: prev.score };
 
     const { data, error } = await client
-        .from('leaderboard')
+        .from(LB_TABLE)
         .update({ score })
         .eq('alias', alias)
         .select()
@@ -75,7 +77,7 @@ async function enviarPuntuacion(alias, score) {
 async function obtenerTop3() {
     const client = initSupabase();
     const { data, error } = await client
-        .from('leaderboard')
+        .from(LB_TABLE)
         .select('alias, score')
         .order('score', { ascending: false })
         .limit(3);
@@ -87,7 +89,7 @@ async function obtenerTop3() {
 async function obtenerPosicion(alias, score) {
     const client = initSupabase();
     const { data: mine, error: mErr } = await client
-        .from('leaderboard')
+        .from(LB_TABLE)
         .select('score')
         .eq('alias', alias)
         .maybeSingle();
@@ -95,7 +97,7 @@ async function obtenerPosicion(alias, score) {
 
     const best = Math.max(mine ? mine.score : 0, score || 0);
     const { count, error } = await client
-        .from('leaderboard')
+        .from(LB_TABLE)
         .select('alias', { count: 'exact', head: true })
         .gt('score', best);
     if (error) throw error;
