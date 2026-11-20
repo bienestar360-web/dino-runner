@@ -26,3 +26,8 @@ npm-debug.log*
 .vscode/
 .idea/
 *.swp
+
+# Herramientas locales (no publicar)
+verify.html
+audit_site.sh
+publish_article.sh
