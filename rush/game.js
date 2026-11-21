@@ -404,8 +404,18 @@ class DinoDodge extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
         this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-        this.input.on('pointerdown', (p) => { this.targetX = p.x; });
-        this.input.on('pointermove', (p) => { if (p.isDown) this.targetX = p.x; });
+        this.input.on('pointerdown', (p) => {
+            if (this.fp) { this.tapT = this.time.now; this.tapX = p.x; this.tapMoved = false; }
+            else this.targetX = p.x;
+        });
+        this.input.on('pointermove', (p) => {
+            if (!p.isDown) return;
+            if (!this.fp) { this.targetX = p.x; return; }
+            if (Math.abs(p.x - this.tapX) > 12) { this.tapMoved = true; this.targetX = p.x; }
+        });
+        this.input.on('pointerup', () => {
+            if (this.fp && !this.tapMoved && this.time.now - this.tapT < 250) this.fpJump();
+        });
 
         this.scale.on('resize', (size) => this.onResize(size), this);
 
@@ -457,6 +467,34 @@ class DinoDodge extends Phaser.Scene {
         this.FP = { near: 3, far: 56, speed: spd > 0 ? spd : 12, stripe: 4 };
         this.fpDist = 0;
         this.fpObs = [];
+        this.camH = 0;   // altura de la camara (salto), en px del plano del jugador
+        this.camV = 0;   // velocidad vertical del salto
+        const _bar = parseFloat(new URLSearchParams(window.location.search).get('bar'));
+        this.FP.bar = _bar >= 0 ? _bar : 10;   // segundos hasta la primera barrera
+        // Barrera baja 200x44: tronco calcinado con grietas de lava (se salta o se rodea)
+        if (this.textures.exists('rush-barrier')) this.textures.remove('rush-barrier');
+        const bt = this.textures.createCanvas('rush-barrier', 200, 44);
+        if (bt) {
+            const c = bt.getContext();
+            const rrB = (x, y, w, h, r) => {
+                c.beginPath(); c.moveTo(x + r, y);
+                c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r);
+                c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath();
+            };
+            const bg = c.createLinearGradient(0, 6, 0, 42);
+            bg.addColorStop(0, '#5a3a22'); bg.addColorStop(0.45, '#33201a'); bg.addColorStop(1, '#140a08');
+            rrB(4, 6, 192, 36, 12); c.fillStyle = bg; c.fill();
+            const lg = c.createLinearGradient(0, 24, 0, 44);
+            lg.addColorStop(0, 'rgba(255,110,30,0)'); lg.addColorStop(1, 'rgba(255,110,30,0.55)');
+            rrB(4, 6, 192, 36, 12); c.fillStyle = lg; c.fill();
+            rrB(4, 6, 192, 36, 12); c.strokeStyle = 'rgba(10,5,4,0.8)'; c.lineWidth = 2; c.stroke();
+            c.strokeStyle = 'rgba(255,150,50,0.9)'; c.lineWidth = 2; c.lineCap = 'round';
+            [[30, 14, 44, 24, 36, 34], [84, 10, 96, 22, 90, 36], [140, 14, 152, 26, 146, 36], [176, 12, 168, 24, 172, 34]]
+                .forEach((s) => { c.beginPath(); c.moveTo(s[0], s[1]); c.lineTo(s[2], s[3]); c.lineTo(s[4], s[5]); c.stroke(); });
+            c.strokeStyle = 'rgba(255,220,170,0.35)'; c.lineWidth = 1.5;
+            c.beginPath(); c.moveTo(16, 9); c.lineTo(184, 9); c.stroke();
+            bt.refresh();
+        }
         // Lo que en Dodge era dino, suelo y presa se oculta: se mira desde los ojos del dino
         [this.player, this.ground, this.groundFill, this.prey].forEach((o) => { if (o) o.setVisible(false); });
         this.fpGfx = this.add.graphics().setDepth(5);
@@ -476,10 +514,24 @@ class DinoDodge extends Phaser.Scene {
         this.layoutBackdrop();
     }
 
+    fpJump() {
+        if (this.gameOver || !this.fp || this.camH > 0 || this.camV > 0) return;
+        this.camV = 540 * Phaser.Math.Clamp(this.scale.width / 700, 0.55, 2);
+        try { SoundFX.play(520, 0.12, 'sine', 0.06); } catch (e) {}
+    }
+
     fpSpawn() {
         const w = this.scale.width;
         const rw = w / 2 - 20;
         const lat = this.player.x - w / 2;
+        // Barrera baja (se salta o se rodea): aparece pasados FP.bar segundos y cada vez mas
+        if (this.elapsed > this.FP.bar && Math.random() < Math.min(0.28, 0.10 + (this.elapsed - this.FP.bar) / 300)) {
+            const half = rw * Phaser.Math.FloatBetween(0.18, 0.32);
+            const bx = Phaser.Math.Clamp(lat + Phaser.Math.Between(-120, 120), -rw + half, rw - half);
+            const bimg = this.add.image(0, 0, 'rush-barrier').setOrigin(0.5, 1).setVisible(false);
+            this.fpObs.push({ img: bimg, type: 'barrier', T: { mult: 1.0, r: 0 }, X: bx, d: this.FP.far, half: half, low: true });
+            return;
+        }
         const type = this.meteorType();
         const T = DODGE_TYPES[type];
         const near = Math.random() < 0.6;
@@ -502,7 +554,15 @@ class DinoDodge extends Phaser.Scene {
         const pHalf = w * 0.035;                  // mitad del ancho del jugador
         const v = F.speed * (this.fallSpeed / 260);
         this.fpDist += v * dt;
-        const yOf = (q) => hy + (yb - hy) * q;
+        // Salto: la camara sube (camH) y todo baja en pantalla; se escala con el ancho para que se sienta igual en movil y escritorio
+        const kj = Phaser.Math.Clamp(w / 700, 0.55, 2);
+        if (Phaser.Input.Keyboard.JustDown(this.cursors.up) || Phaser.Input.Keyboard.JustDown(this.cursors.space)) this.fpJump();
+        if (this.camH > 0 || this.camV > 0) {
+            this.camV -= 1700 * kj * dt;
+            this.camH += this.camV * dt;
+            if (this.camH <= 0) { this.camH = 0; this.camV = 0; }
+        }
+        const yOf = (q) => hy + (yb - hy + this.camH) * q;
 
         // Paralaje: al moverte de lado, lo lejano casi no se mueve
         this.ridges[0].tilePositionX = lat * 0.04;
@@ -547,11 +607,15 @@ class DinoDodge extends Phaser.Scene {
             const T = o.T;
             o.d -= v * T.mult * dt;
             if (o.d <= F.near) {
-                const hit = T.r * sNear * 0.9 + pHalf;
-                if (Math.abs(o.X - lat) < hit) { this.die(); return; }
+                if (o.low) {
+                    if (Math.abs(o.X - lat) < o.half + pHalf && this.camH < 42 * kj) { this.die(); return; }
+                } else {
+                    const hit = T.r * sNear * 0.9 + pHalf;
+                    if (Math.abs(o.X - lat) < hit) { this.die(); return; }
+                }
                 this.score += this.points;
                 this.scoreText.setText(this.score);
-                SoundFX.impact(o.type, Phaser.Math.Clamp((o.X - lat) / rw, -1, 1));
+                SoundFX.impact(o.low ? 'fragment' : o.type, Phaser.Math.Clamp((o.X - lat) / rw, -1, 1));
                 o.img.destroy();
                 this.fpObs.splice(i, 1);
                 continue;
@@ -559,6 +623,12 @@ class DinoDodge extends Phaser.Scene {
             const q = F.near / o.d;
             const x = cx + (o.X - lat) * q;
             const yg = yOf(q);
+            if (o.low) {
+                g.fillStyle(0x000000, 0.35);
+                g.fillEllipse(x, yg, o.half * 2 * q, o.half * 0.25 * q);
+                o.img.setVisible(true).setScale(o.half * 2 * q / 200, 42 * kj * q / 44).setPosition(x, yg).setDepth(8 + q);
+                continue;
+            }
             g.fillStyle(0x000000, 0.35);
             g.fillEllipse(x, yg, T.r * sNear * q * 2.2, T.r * sNear * q * 0.7);
             o.img.setVisible(true).setScale(sNear * q).setPosition(x, yg).setDepth(8 + q);
