@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <base href="/dodge/">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dino Dodge: Lluvia de Meteoritos — Dino Runner</title>
+  <meta name="description" content="Dino Dodge: Lluvia de Meteoritos. El dino esquiva los meteoritos que caen del cielo. Arrastra o usa las flechas: un juego de reflejos basado en Dino Runner.">
+  <link rel="canonical" href="https://mydinorun.com/dodge">
+  <link rel="stylesheet" href="style.css?v=1">
+  <meta name="google-adsense-account" content="ca-pub-5551964617457049">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5551964617457049" crossorigin="anonymous"></script>
+  <script>
+    window.adsbygoogle = window.adsbygoogle || [];
+    var adBreak = adConfig = function(o) { adsbygoogle.push(o); };
+  </script>
+</head>
+<body class="article-page" style="background:#1d1f24;">
+  <div id="game-container">
+    <div id="game-canvas"></div>
+    <div id="start-screen">
+      <h1>🦖 Dino Dodge: Lluvia de Meteoritos</h1>
+      <div class="mode-selector" style="margin: 10px 0;">
+        <button class="mode-btn active" data-mode="normal">Clásico</button>
+        <button class="mode-btn" data-mode="leyenda">🔥 Leyenda</button>
+        <button class="mode-btn" data-mode="lento">🐢 Lento</button>
+      </div>
+      <p>Comías tranquilo en el valle cuando el volcán despertó. Esquiva la lluvia de fuego. Arrastra o usa ← →.</p>
+      <input type="text" id="alias-input" maxlength="15" placeholder="Alias" autocomplete="off">
+      <div class="btn-row">
+        <button id="start-btn">Jugar</button>
+      </div>
+      <p class="start-links" style="margin-top:12px;">
+        <a href="/">Volver a Dino Runner</a>
+        <a href="/guias">📚 Guías</a>
+      </p>
+    </div>
+    <div id="game-over-screen">
+      <h2>GAME OVER</h2>
+      <p class="final"><span id="over-alias">?</span> · Meteoritos: <span id="final-score-text">0</span></p>
+      <div id="position-line">Calculando posición…</div>
+      <h3>TOP 3 GLOBAL</h3>
+      <ol id="top3-list"></ol>
+      <p id="rank-error" class="error"></p>
+      <div class="btn-row">
+        <button id="restart-btn">Reiniciar</button>
+        <button id="home-btn" class="ghost">🏠 Inicio</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="supabase.js"></script>
+  <script src="game.js"></script>
+  <script>
+    // Gestión de pantallas y botones (similar al runner)
+    let currentAlias = localStorage.getItem('dino_alias') || '';
+
+    function showScreen(which) {
+      ['start-screen','game-over-screen'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+      const el = document.getElementById(which);
+      if (el) el.style.display = 'flex';
+    }
+
+    async function onStartClick() {
+      const input = document.getElementById('alias-input');
+      let alias = (input.value || '').trim();
+      if (!alias) alias = `Jugador_${Math.floor(1000 + Math.random() * 9000)}`;
+      currentAlias = alias;
+      try { localStorage.setItem('dino_alias', alias); } catch(e) {}
+      document.getElementById('start-screen').style.display = 'none';
+      window.startGame(alias);
+    }
+
+    document.getElementById('start-btn').onclick = onStartClick;
+    document.getElementById('random-btn')?.addEventListener('click', () => {
+      document.getElementById('alias-input').value = `Jugador_${Math.floor(1000 + Math.random() * 9000)}`;
+    });
+
+    // Reiniciar (con preservación de modo, aunque Flap no tiene modos)
+    document.getElementById('restart-btn').onclick = () => {
+      const alias = currentAlias || localStorage.getItem('dino_alias') || 'Jugador_0000';
+      try { sessionStorage.setItem('dino_restart_alias', alias); } catch(e) {}
+      const _mode = new URLSearchParams(window.location.search).get('mode') || 'normal';
+      location.href = location.pathname + (_mode !== 'normal' ? '?mode=' + _mode + '&r=' : '?r=') + Date.now();
+    };
+
+    // Inicio
+    document.getElementById('home-btn').onclick = () => {
+      try {
+        sessionStorage.removeItem('dino_restart_alias');
+      } catch(e) {}
+      location.href = '/';
+    };
+
+    // Al cargar, mostrar start
+    showScreen('start-screen');
+
+    // Precargar alias
+    try {
+      const savedAlias = localStorage.getItem('dino_alias');
+      if (savedAlias) document.getElementById('alias-input').value = savedAlias;
+    } catch(e) {}
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const modeBtns = document.querySelectorAll('.mode-btn');
+      const urlMode = new URLSearchParams(window.location.search).get('mode') || 'normal';
+      modeBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === urlMode);
+        btn.addEventListener('click', () => {
+          const mode = btn.dataset.mode;
+          if (mode === 'normal') {
+            window.location.href = '/dodge/index.html';
+          } else {
+            window.location.href = '/dodge/index.html?mode=' + mode;
+          }
+        });
+      });
+    });
+  </script>
+
+
+  <script>
+    // Fallback móvil: touchend + pointerup (igual que el runner)
+    (function() {
+      function attach() {
+        const restartBtn = document.getElementById('restart-btn');
+        const homeBtn = document.getElementById('home-btn');
+        if (!restartBtn || !homeBtn) { setTimeout(attach, 200); return; }
+
+        let __restarting = false;
+        const restartHandler = (ev) => {
+          if (__restarting) return;
+          __restarting = true;
+          if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+          console.log('[RESTART-FALLBACK] triggered');
+          const alias = (typeof currentAlias !== 'undefined' && currentAlias)
+                     || localStorage.getItem('dino_alias') || 'Jugador_0000';
+          try { sessionStorage.setItem('dino_restart_alias', alias); } catch(e) {}
+          const mode = new URLSearchParams(window.location.search).get('mode') || 'normal';
+          const url = location.pathname + (mode !== 'normal' ? '?mode=' + mode + '&r=' : '?r=') + Date.now();
+          console.log('[RESTART-FALLBACK] ->', url);
+          location.href = url;
+          setTimeout(() => { __restarting = false; }, 2000);
+        };
+
+        let __homeGoing = false;
+        const homeHandler = (ev) => {
+          if (__homeGoing) return;
+          __homeGoing = true;
+          if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+          console.log('[HOME-FALLBACK] triggered');
+          try { sessionStorage.removeItem('dino_restart_alias'); } catch(e) {}
+          location.href = '/';
+          setTimeout(() => { __homeGoing = false; }, 2000);
+        };
+
+        restartBtn.addEventListener('touchend', restartHandler, { passive: false });
+        restartBtn.addEventListener('pointerup', restartHandler);
+        homeBtn.addEventListener('touchend', homeHandler, { passive: false });
+        homeBtn.addEventListener('pointerup', homeHandler);
+        console.log('[FALLBACK] restart + home attached');
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', attach);
+      } else {
+        attach();
+      }
+    })();
+  </script>
+
+</body>
+</html>
