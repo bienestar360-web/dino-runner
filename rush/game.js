@@ -1083,7 +1083,7 @@ window.onGameOver = (alias, score) => {
     const timeout = setTimeout(() => { console.warn('[ADS] timeout, forzando'); show(); }, 1500);
     if (typeof adBreak === 'function') {
         adBreak({
-            type: 'next', name: 'dodge_game_over',
+            type: 'next', name: 'rush_game_over',
             beforeAd: () => { clearTimeout(timeout); },
             afterAd: () => { clearTimeout(timeout); show(); },
             adBreakDone: () => { clearTimeout(timeout); show(); }

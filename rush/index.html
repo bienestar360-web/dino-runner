@@ -5,7 +5,7 @@
   <base href="/rush/">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Dino Rush: Carrera Frontal — Dino Runner</title>
-  <meta name="description" content="Dino Rush: carrera en primera persona. El dino corre de frente y esquiva los obstáculos que vienen hacia él. Arrastra o usa las flechas.">
+  <meta name="description" content="Dino Rush: carrera en primera persona. El dino corre de frente y esquiva los obstáculos que vienen hacia él. Arrastra o usa las flechas para esquivar y salta con un toque o la barra espaciadora.">
   <link rel="canonical" href="https://mydinorun.com/rush">
   <meta name="robots" content="noindex">
   <link rel="stylesheet" href="style.css?v=1">
@@ -26,7 +26,7 @@
         <button class="mode-btn" data-mode="leyenda">🔥 Leyenda</button>
         <button class="mode-btn" data-mode="lento">🐢 Lento</button>
       </div>
-      <p>Comías tranquilo en el valle cuando el volcán despertó. Esquiva la lluvia de fuego. Arrastra o usa ← →.</p>
+      <p>Comías tranquilo en el valle cuando el volcán despertó. ¡Corre! Esquiva con ← → o arrastrando y salta con espacio o un toque.</p>
       <input type="text" id="alias-input" maxlength="15" placeholder="Alias" autocomplete="off">
       <div class="btn-row">
         <button id="start-btn">Jugar</button>
@@ -38,7 +38,7 @@
     </div>
     <div id="game-over-screen">
       <h2>GAME OVER</h2>
-      <p class="final"><span id="over-alias">?</span> · Meteoritos: <span id="final-score-text">0</span></p>
+      <p class="final"><span id="over-alias">?</span> · Puntos: <span id="final-score-text">0</span></p>
       <div id="position-line">Calculando posición…</div>
       <h3>TOP 3 GLOBAL</h3>
       <ol id="top3-list"></ol>
