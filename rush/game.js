@@ -506,7 +506,7 @@ class DinoDodge extends Phaser.Scene {
             const hy0 = Hh * 0.42;
             // Pantallas altas y estrechas (movil vertical): el camino no puede ser mas profundo que _cr veces su semiancho,
             // asi la camara queda mas baja. En pantallas anchas hy = hy0 y no cambia nada.
-            const hy = Math.max(hy0, yb0 - (_cr > 0 ? _cr : 1.5) * (W / 2 - 20));
+            const hy = Math.max(hy0, yb0 - (_cr > 0 ? _cr : 0.55) * (W / 2 - 20));
             this.fpHy = hy;
             const ks = Math.max(0.5, Math.min(1.3, hy0 / 300 * 0.55));
             this.ridges.forEach((r) => r.setPosition(W / 2, hy).setScale(1, ks));
