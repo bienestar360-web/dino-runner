@@ -176,6 +176,23 @@
     })();
   </script>
 
+<!-- FIX-INNERH: altura visible real en Chrome Android (100vh incluye la barra de direcciones) -->
+<script>
+(function () {
+  function fit() {
+    var g = document.getElementById('game-container');
+    if (!g) return;
+    var h = Math.round(window.innerHeight) + 'px';
+    g.style.setProperty('height', h, 'important');
+    g.style.setProperty('min-height', h, 'important');
+    g.style.setProperty('max-height', h, 'important');
+  }
+  fit();
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function () { setTimeout(fit, 150); });
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', fit);
+})();
+</script>
 <!-- DEBUG-VIEWPORT: solo con ?debug=1 -->
 <script>
 (function () {
