@@ -501,11 +501,16 @@ class DinoDodge extends Phaser.Scene {
         // El horizonte baja la cordillera y el volcan a una linea mas alta; onResize vuelve a llamar a esta funcion
         this.layoutBackdrop = () => {
             const W = this.scale.width, Hh = this.scale.height;
-            const hy = Hh * 0.42;
+            const yb0 = Hh - this.groundPad;
+            const _cr = parseFloat(new URLSearchParams(window.location.search).get('cam'));
+            const hy0 = Hh * 0.42;
+            // Pantallas altas y estrechas (movil vertical): el camino no puede ser mas profundo que _cr veces su semiancho,
+            // asi la camara queda mas baja. En pantallas anchas hy = hy0 y no cambia nada.
+            const hy = Math.max(hy0, yb0 - (_cr > 0 ? _cr : 1.5) * (W / 2 - 20));
             this.fpHy = hy;
-            const ks = Math.max(0.5, Math.min(1.3, hy / 300 * 0.55));
+            const ks = Math.max(0.5, Math.min(1.3, hy0 / 300 * 0.55));
             this.ridges.forEach((r) => r.setPosition(W / 2, hy).setScale(1, ks));
-            const vs = 0.62 * hy / 314;
+            const vs = 0.62 * hy0 / 314;
             this.fpVx = W * 0.7;
             this.volcano.setScale(vs).setPosition(this.fpVx, hy);
             this.crater = { x: this.fpVx, y: hy - 314 * vs, s: vs };
