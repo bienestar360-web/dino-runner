@@ -176,5 +176,28 @@
     })();
   </script>
 
+<!-- DEBUG-VIEWPORT: solo con ?debug=1 -->
+<script>
+(function () {
+  if (new URLSearchParams(location.search).get('debug') !== '1') return;
+  var o = document.createElement('div');
+  o.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;border:3px solid #0f0;z-index:99999;pointer-events:none;box-sizing:border-box';
+  var t = document.createElement('pre');
+  t.style.cssText = 'position:absolute;left:6px;top:40px;margin:0;padding:4px 6px;background:rgba(0,0,0,.75);color:#0f0;font:12px monospace;white-space:pre-wrap';
+  o.appendChild(t);
+  document.body.appendChild(o);
+  function f() {
+    var c = document.querySelector('canvas'), g = document.getElementById('game-container');
+    var r = c ? c.getBoundingClientRect() : null, q = g ? g.getBoundingClientRect() : null, v = window.visualViewport;
+    t.textContent =
+      'innerH ' + innerHeight + ' | clientH ' + document.documentElement.clientHeight + ' | vv ' + (v ? Math.round(v.height) : '-') + ' | scrollY ' + Math.round(scrollY) + '\n' +
+      'container top ' + (q ? Math.round(q.top) : '-') + ' bottom ' + (q ? Math.round(q.bottom) : '-') + '\n' +
+      'canvas top ' + (r ? Math.round(r.top) : '-') + ' bottom ' + (r ? Math.round(r.bottom) : '-') + ' attr ' + (c ? c.width + 'x' + c.height : '-') + '\n' +
+      'dpr ' + devicePixelRatio;
+  }
+  setInterval(f, 500);
+  f();
+})();
+</script>
 </body>
 </html>
