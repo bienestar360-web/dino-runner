@@ -18,6 +18,8 @@ const MTN_FX = {
         { glow: 0.85, lava: 0.75, smoke: 1.00, ast: 0.60, ptero: 0, flee: 1 },
         { glow: 1.00, lava: 1.00, smoke: 1.00, ast: 1.00, ptero: 0, flee: 1 }
     ],
+    // Paleta fija del escenario (cielo y montanas de ceniza y fuego, igual que Flap y el runner)
+    EMBER: { top: 0x0e0a1f, bottom: 0xb04a2a, far: 0x5a2a5a, mid: 0x40204a, near: 0x2c1636, fog: 0x9a4030 },
     lerpLore(A, B, t) {
         const o = {};
         for (const k in A) o[k] = A[k] + (B[k] - A[k]) * t;
@@ -369,8 +371,131 @@ class DinoMountain extends Phaser.Scene {
         });
     }
 
+    // PARCHE: dino del runner (3 poses) en Mountain. Solo aspecto: misma textura 40x32 y mismo hitbox.
+    paintMtnDinoArt() {
+        if (new URLSearchParams(window.location.search).get('art') === 'old') return;
+        this.mtnArtNew = true;
+        const TAU = Math.PI * 2;
+        const mk = (key, w, h, fn) => {
+            if (this.textures.exists(key)) this.textures.remove(key);
+            const tex = this.textures.createCanvas(key, w, h);
+            if (!tex) return;
+            fn(tex.getContext());
+            tex.refresh();
+        };
+        const lin = (c, x0, y0, x1, y1, st) => {
+            const g = c.createLinearGradient(x0, y0, x1, y1);
+            st.forEach((s) => g.addColorStop(s[0], s[1]));
+            return g;
+        };
+        const rad = (c, x0, y0, r0, x1, y1, r1, st) => {
+            const g = c.createRadialGradient(x0, y0, r0, x1, y1, r1);
+            st.forEach((s) => g.addColorStop(s[0], s[1]));
+            return g;
+        };
+        const rr = (c, x, y, w, h, r) => {
+            c.beginPath();
+            c.moveTo(x + r, y);
+            c.arcTo(x + w, y, x + w, y + h, r);
+            c.arcTo(x + w, y + h, x, y + h, r);
+            c.arcTo(x, y + h, x, y, r);
+            c.arcTo(x, y, x + w, y, r);
+            c.closePath();
+        };
+        const poly = (c, pts) => {
+            c.beginPath();
+            pts.forEach((p, i) => (i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])));
+            c.closePath();
+        };
+        const line = (c, x0, y0, x1, y1, col, lw) => {
+            c.beginPath(); c.moveTo(x0, y0); c.lineTo(x1, y1);
+            c.strokeStyle = col; c.lineWidth = lw; c.stroke();
+        };
+        const dot = (c, x, y, r, fill) => {
+            c.beginPath(); c.arc(x, y, r, 0, TAU); c.fillStyle = fill; c.fill();
+        };
+
+        // Dino del runner (pose a / pose b = carrera, pose j = salto), dibujado en 40x40
+        const dinoFrame = (pose) => (c) => {
+            const OUT = 'rgba(10,45,25,0.85)';
+            c.lineJoin = 'round';
+            c.lineCap = 'round';
+            const P = {
+                a: { near: [[14, 28], [18, 33], [21, 37.8], [24.5, 37.8]], far: [[22, 28], [21, 32], [17, 34.5], [19.5, 34.5]], tail: 16 },
+                b: { near: [[14, 28], [12.5, 32], [9, 34.5], [11.5, 34.5]], far: [[22, 28], [25, 33], [27, 37.8], [30.5, 37.8]], tail: 21 },
+                j: { near: [[14, 28], [18, 31], [20, 35], [23.5, 35.5]], far: [[22, 28], [24.5, 31], [25, 34.5], [28.5, 35]], tail: 14 }
+            }[pose];
+            const leg = (pts, col) => {
+                c.beginPath();
+                pts.forEach((p, i) => (i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])));
+                c.strokeStyle = OUT; c.lineWidth = 5.4; c.stroke();
+                c.strokeStyle = col; c.lineWidth = 3.8; c.stroke();
+            };
+            // pata lejana (mas oscura)
+            leg(P.far, '#1b7a45');
+            // cola
+            poly(c, [[9, 17], [0.8, P.tail], [9, 27]]);
+            c.fillStyle = lin(c, 0, 14, 9, 27, [[0, '#4fe08a'], [1, '#17703f']]);
+            c.fill();
+            c.strokeStyle = OUT; c.lineWidth = 1; c.stroke();
+            // placas dorsales
+            [12, 17, 22].forEach((x) => {
+                poly(c, [[x - 3, 16], [x, 10.5], [x + 3, 16]]);
+                c.fillStyle = '#17703f'; c.fill();
+                poly(c, [[x - 3, 16], [x, 10.5], [x, 16]]);
+                c.fillStyle = '#2fae66'; c.fill();
+            });
+            // pata cercana
+            leg(P.near, '#2fae66');
+            // cuerpo con volumen
+            rr(c, 7, 15, 22, 15, 6);
+            c.fillStyle = lin(c, 0, 15, 0, 30, [[0, '#5fdc90'], [0.3, '#27ae60'], [1, '#176b3a']]);
+            c.fill();
+            rr(c, 7, 15, 22, 15, 6);
+            c.fillStyle = rad(c, 14, 18, 1, 14, 18, 15, [[0, 'rgba(255,255,255,0.35)'], [1, 'rgba(255,255,255,0)']]);
+            c.fill();
+            c.beginPath(); c.ellipse(18, 27, 6, 2.4, 0, 0, TAU);
+            c.fillStyle = 'rgba(190,255,200,0.22)'; c.fill();
+            rr(c, 7, 15, 22, 15, 6);
+            c.strokeStyle = OUT; c.lineWidth = 1; c.stroke();
+            line(c, 12, 15.7, 21, 15.7, 'rgba(255,255,255,0.45)', 1);
+            // brazo
+            line(c, 23, 21.5, 26.5, 24.5, '#1f8a4d', 2.4);
+            // hocico y cabeza
+            rr(c, 32.5, 9, 7.5, 7, 2.5);
+            c.fillStyle = lin(c, 0, 9, 0, 16, [[0, '#3fd17c'], [1, '#1f8a4d']]);
+            c.fill();
+            c.strokeStyle = OUT; c.lineWidth = 1; c.stroke();
+            c.beginPath(); c.arc(28, 12, 7.5, 0, TAU);
+            c.fillStyle = rad(c, 25, 8.5, 1, 28, 12, 10, [[0, '#7bf0a6'], [0.45, '#2fbf6b'], [1, '#17703f']]);
+            c.fill();
+            c.beginPath(); c.arc(28, 12, 7.5, Math.PI * 0.62, Math.PI * 1.7);
+            c.strokeStyle = OUT; c.lineWidth = 1; c.stroke();
+            // ojo, ceja, nariz y boca
+            dot(c, 31.2, 9.2, 3, '#ffffff');
+            dot(c, 32.2, 9.6, 1.6, '#0b1a12');
+            dot(c, 31.7, 8.9, 0.55, '#ffffff');
+            line(c, 28.5, 6, 33.5, 7, 'rgba(10,60,30,0.7)', 1.1);
+            dot(c, 38.3, 11, 0.7, 'rgba(0,40,20,0.7)');
+            line(c, 34, 14.2, 39.2, 14.2, 'rgba(0,40,20,0.55)', 0.9);
+        };
+
+        // 40x40 -> 40x32 (escala 0.88, pies abajo): misma textura y mismo hitbox que antes
+        const frame = (pose) => (c) => {
+            c.save();
+            c.translate(2, -3.2);
+            c.scale(0.88, 0.88);
+            dinoFrame(pose)(c);
+            c.restore();
+        };
+        mk('mountain-dino', 40, 32, frame('a'));
+        mk('mountain-dino-run2', 40, 32, frame('b'));
+        mk('mountain-dino-jump', 40, 32, frame('j'));
+    }
+
     create() {
         this.paintCharacterArt();
+        this.paintMtnDinoArt();
         const w = this.scale.width, h = this.scale.height;
 
         // Fondo: cielo en degradado + 3 capas de montañas con niebla (ver MTN_FX.PALETTE)
@@ -460,7 +585,7 @@ class DinoMountain extends Phaser.Scene {
         });
 
         this.backdropY0 = null;
-        this.themeNow = MTN_FX.PALETTE[0];
+        this.themeNow = this.mtnArtNew ? MTN_FX.EMBER : MTN_FX.PALETTE[0];
         this.loreOn = new URLSearchParams(window.location.search).get('lore') !== 'off';
         this.loreNow = MTN_FX.LORE[0];
         this.themeTween = null;
@@ -480,6 +605,7 @@ class DinoMountain extends Phaser.Scene {
         const sc = this.skyTex.getContext();
         const sg = sc.createLinearGradient(0, 0, 0, 256);
         sg.addColorStop(0, css(t.top));
+        if (this.mtnArtNew) { sg.addColorStop(0.5, '#2a1636'); sg.addColorStop(0.8, '#6b2432'); }
         sg.addColorStop(1, css(t.bottom));
         sc.fillStyle = sg;
         sc.fillRect(0, 0, 4, 256);
@@ -581,6 +707,53 @@ class DinoMountain extends Phaser.Scene {
 
         this.asteroid = this.add.image(w * 0.74, h * 0.25, 'lore-ast')
             .setScrollFactor(0).setDepth(-18).setVisible(false);
+
+        // Nubes de ceniza (entre el meteorito -18 y los pterosaurios -16): dan lejania al meteorito
+        this.mtnClouds = [];
+        if (this.mtnArtNew) {
+            mk('mtn-ash', 320, 140, (c) => {
+                const blob = (x, y, rx, ry) => { c.beginPath(); c.ellipse(x, y, rx, ry, 0, 0, TAU); c.fill(); };
+                const shapes = [[80, 92, 62, 24], [160, 84, 84, 34], [240, 92, 62, 24],
+                                [120, 66, 52, 22], [200, 64, 58, 24], [160, 100, 100, 18]];
+                // halo suave (evita el borde duro de burbuja)
+                c.fillStyle = 'rgba(110,64,76,0.22)';
+                shapes.forEach((s) => blob(s[0], s[1], s[2] + 10, s[3] + 8));
+                // cuerpo plano con degradado vertical
+                const g = c.createLinearGradient(0, 40, 0, 125);
+                g.addColorStop(0, '#6a5470');
+                g.addColorStop(1, '#2c1e36');
+                c.fillStyle = g;
+                shapes.forEach((s) => blob(s[0], s[1], s[2], s[3]));
+                // jirones sueltos a la derecha
+                blob(296, 78, 12, 6); blob(312, 92, 7, 4); blob(284, 99, 9, 5);
+                // rendijas (huecos planos)
+                c.globalCompositeOperation = 'destination-out';
+                c.fillStyle = '#000';
+                [[60, 108, 16, 2.5], [172, 112, 20, 3], [236, 82, 13, 2.5], [126, 52, 11, 2], [270, 104, 12, 2.5]]
+                    .forEach((k) => { c.beginPath(); c.ellipse(k[0], k[1], k[2], k[3], 0, 0, TAU); c.fill(); });
+                // luz del meteorito (arriba-izquierda) y del horizonte (abajo)
+                c.globalCompositeOperation = 'source-atop';
+                const gl = c.createRadialGradient(30, 20, 4, 30, 20, 210);
+                gl.addColorStop(0, 'rgba(255,150,70,0.55)');
+                gl.addColorStop(1, 'rgba(255,90,30,0)');
+                c.fillStyle = gl;
+                c.fillRect(0, 0, 320, 140);
+                const hz = c.createLinearGradient(0, 80, 0, 125);
+                hz.addColorStop(0, 'rgba(220,100,50,0)');
+                hz.addColorStop(1, 'rgba(220,100,50,0.40)');
+                c.fillStyle = hz;
+                c.fillRect(0, 0, 320, 140);
+                c.globalCompositeOperation = 'source-over';
+            });
+            const _ck = Math.min(1.2, w / 700);
+            // [x relativa, y relativa, escala, alpha, velocidad px/s]
+            [[0.10, 0.20, 1.5, 0.80, 9], [0.45, 0.30, 1.1, 0.70, 6], [0.80, 0.16, 1.3, 0.75, 8], [0.62, 0.38, 1.7, 0.80, 11]]
+                .forEach((k) => {
+                    const img = this.add.image(w * k[0], h * k[1], 'mtn-ash')
+                        .setScrollFactor(0).setDepth(-17).setScale(k[2] * _ck).setAlpha(k[3]);
+                    this.mtnClouds.push({ img: img, yf: k[1], sp: k[4] });
+                });
+        }
         this.pteros = [0, 1, 2, 3].map((i) => ({
             img: this.add.image(0, 0, 'lore-ptero-0').setScrollFactor(0).setDepth(-16).setVisible(false),
             x: w * (0.1 + i * 0.27), y: 0.10 + 0.075 * i, sp: 16 + i * 6, sc: [1.3, 1, 1.6, 0.9][i]
@@ -593,13 +766,34 @@ class DinoMountain extends Phaser.Scene {
         const w = this.scale.width, h = this.scale.height, now = this.time.now;
         const dt = Math.min(0.05, this.game.loop.delta / 1000);
 
+        if (this.mtnClouds && this.mtnClouds.length) {
+            this.mtnClouds.forEach((cl) => {
+                cl.img.x -= cl.sp * dt;
+                const half = cl.img.displayWidth / 2;
+                if (cl.img.x < -half) cl.img.x = w + half;
+            });
+        }
+
         const a = this.asteroid;
-        if (L.ast < 0.02) {
+        if (L.ast < 0.02 && !this.mtnArtNew) {
             a.setVisible(false);
         } else {
-            const sc = L.ast * 2.2 * Math.min(1, h / 700);
-            a.setVisible(true).setScale(sc).setAlpha(Math.min(1, L.ast * 3))
-                .setPosition(w * 0.74, h * (0.27 - 0.05 * L.ast) + Math.sin(now / 1800) * 3);
+            const sc = (this.mtnArtNew ? 1.3 + 0.9 * (this._astP || 0) : L.ast * 2.2) * Math.min(1, h / 700);
+            a.setVisible(true).setScale(sc).setAlpha(this.mtnArtNew ? 1 : Math.min(1, L.ast * 3));
+            if (this.mtnArtNew) {
+                // de izquierda a derecha y bajando con el nivel; cae a un lado del dino
+                // caida lenta y continua: depende de las plataformas superadas, no del cambio de nivel
+                if (!this._mtnEvery) {
+                    const _ev = parseInt(new URLSearchParams(window.location.search).get('every'), 10);
+                    this._mtnEvery = _ev > 0 ? _ev : 15;
+                }
+                const _tgt = Phaser.Math.Clamp((this.passed || 0) / (6 * this._mtnEvery), 0, 1);
+                if (this._astP === undefined || !this.passed) this._astP = _tgt;
+                this._astP += (_tgt - this._astP) * Math.min(1, 0.8 * dt);
+                a.setFlipX(true).setPosition(w * (0.14 + 0.50 * this._astP), h * (0.16 + 0.22 * this._astP) + Math.sin(now / 1800) * 3);
+            } else {
+                a.setPosition(w * 0.74, h * (0.27 - 0.05 * L.ast) + Math.sin(now / 1800) * 3);
+            }
         }
 
         this.pteros.forEach((p, i) => {
@@ -778,7 +972,7 @@ class DinoMountain extends Phaser.Scene {
     // Transicion suave entre paletas al cambiar de nivel (8 repintados en 2.5 s)
     setTheme(lvl) {
         if (!this.mtnLayers) return;
-        const target = MTN_FX.PALETTE[Math.min(lvl, MTN_FX.PALETTE.length - 1)];
+        const target = this.mtnArtNew ? MTN_FX.EMBER : MTN_FX.PALETTE[Math.min(lvl, MTN_FX.PALETTE.length - 1)];
         const from = this.themeNow;
         const loreFrom = this.loreNow || MTN_FX.LORE[0];
         const loreTo = MTN_FX.LORE[Math.min(lvl, MTN_FX.LORE.length - 1)];
@@ -875,6 +1069,17 @@ class DinoMountain extends Phaser.Scene {
 
         // Auto-scroll horizontal
         this.player.x += this.scrollSpeed * dt;
+
+        // Dino animado (solo aspecto): patas al correr y pose de salto; el hitbox no cambia
+        if (this.mtnArtNew) {
+            const _gr = this.player.body.blocked.down || this.player.body.touching.down;
+            let _pk = 'mountain-dino-jump';
+            if (_gr) {
+                const _per = Phaser.Math.Clamp(36000 / (this.scrollSpeed || 250), 80, 170);
+                _pk = Math.floor(this.time.now / _per) % 2 ? 'mountain-dino-run2' : 'mountain-dino';
+            }
+            if (this.player.texture.key !== _pk) this.player.setTexture(_pk);
+        }
 
         // Gravedad manual
         this.player.body.velocity.y += this.gravity * dt;
