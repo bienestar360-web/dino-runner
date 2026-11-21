@@ -339,7 +339,7 @@ class DinoDodge extends Phaser.Scene {
         this.paintDodgeArt();
         this.paintDodgeMeteorArt();
         const _pd = parseInt(new URLSearchParams(window.location.search).get('pad'), 10);
-        this.groundPad = _pd >= 0 ? _pd : 100; // margen inferior: en movil la pantalla visible corta el borde de abajo
+        this.groundPad = _pd >= 0 ? _pd : 60; // margen inferior: en movil la pantalla visible corta el borde de abajo
         this.groundY = h - this.groundH - this.groundPad;
 
         // Fondo y suelo (con ?art=old, los rectangulos provisionales de antes)
