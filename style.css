@@ -898,3 +898,41 @@ body.article-page .site-footer a { color: #4ea8ff; text-decoration: none; }
   font-size: 0.75rem;
   color: #9aa4b2;
 }
+
+/* === HOME-SCROLL: pantalla de inicio con scroll y tarjetas de juegos iguales (solo #start-screen y .more-games) === */
+#start-screen {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y !important;
+  justify-content: flex-start !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  box-sizing: border-box;
+  padding: 16px 0 calc(28px + env(safe-area-inset-bottom));
+}
+/* Centrado que no corta: con espacio libre centra; sin espacio empieza arriba y se desliza */
+#start-screen > :first-child { margin-top: auto; }
+#start-screen > :last-child { margin-bottom: auto; }
+
+.more-games {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 12px;
+  padding: 8px 0;
+}
+.game-card {
+  min-width: 0;
+  padding: 14px 10px;
+  justify-content: flex-start;
+  text-align: center;
+  box-sizing: border-box;
+}
+/* Con un numero impar de tarjetas, la ultima se centra con el mismo ancho que las demas */
+.game-card:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: calc(50% - 6px);
+}
