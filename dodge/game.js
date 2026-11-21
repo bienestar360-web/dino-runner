@@ -337,6 +337,7 @@ class DinoDodge extends Phaser.Scene {
         const w = this.scale.width, h = this.scale.height;
         this.groundH = 56;
         this.paintDodgeArt();
+        this.paintDodgeMeteorArt();
         this.groundY = h - this.groundH;
 
         // Fondo y suelo (con ?art=old, los rectangulos provisionales de antes)
@@ -458,6 +459,14 @@ class DinoDodge extends Phaser.Scene {
         m.body.setCircle(T.r, T.off, T.off);
         m.setVelocityY(Math.min(720, this.fallSpeed * T.mult * Phaser.Math.FloatBetween(0.95, 1.1)));
         m.setAngularVelocity(T.spin ? Phaser.Math.Between(-T.spin, T.spin) : 0);
+        if (this.artNew) {
+            // Cola de fuego que acompana la caida (no gira con el meteorito)
+            const TS = { rock: [1.5, 1.1], fragment: [0.9, 0.8], ember: [0.6, 1.3] }[type] || [1, 1];
+            const tail = this.add.image(m.x, m.y, 'dodge-tail').setOrigin(0.5, 1).setDepth(7.5)
+                .setBlendMode(Phaser.BlendModes.ADD).setScale(TS[0], TS[1]).setAlpha(type === 'rock' ? 0.8 : 0.9);
+            m.setData('tail', tail);
+            m.once('destroy', () => tail.destroy());
+        }
     }
 
     // Al tocar el suelo: suena (en el lado donde cae) y a veces se queda ardiendo
@@ -465,7 +474,163 @@ class DinoDodge extends Phaser.Scene {
         const type = m.getData('type') || 'fragment';
         const T = DODGE_TYPES[type];
         SoundFX.impact(type, (m.x / this.scale.width) * 2 - 1);
+        this.impactFx(type, m.x);
         if (T.fire && Math.random() < T.fire) this.spawnFire(m.x);
+    }
+
+    // ---- ARTE DE LA CAIDA (solo aspecto): mismas claves y tamanos que las texturas originales ----
+    paintDodgeMeteorArt() {
+        if (!this.artNew) return;
+        const TAU = Math.PI * 2;
+        const mk = (key, tw, th, fn) => {
+            if (this.textures.exists(key)) this.textures.remove(key);
+            const tex = this.textures.createCanvas(key, tw, th);
+            if (!tex) return;
+            fn(tex.getContext());
+            tex.refresh();
+        };
+        const lin = (c, x0, y0, x1, y1, st) => {
+            const g = c.createLinearGradient(x0, y0, x1, y1);
+            st.forEach((q) => g.addColorStop(q[0], q[1]));
+            return g;
+        };
+        const rad = (c, x0, y0, r0, x1, y1, r1, st) => {
+            const g = c.createRadialGradient(x0, y0, r0, x1, y1, r1);
+            st.forEach((q) => g.addColorStop(q[0], q[1]));
+            return g;
+        };
+        const poly = (c, pts) => {
+            c.beginPath();
+            pts.forEach((p, i) => (i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])));
+            c.closePath();
+        };
+        // contorno irregular: un radio por vertice
+        const blob = (c, cx, cy, radii, rot) => {
+            const n = radii.length;
+            c.beginPath();
+            radii.forEach((r, i) => {
+                const a = rot + (TAU * i) / n;
+                const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+                if (i) c.lineTo(x, y); else c.moveTo(x, y);
+            });
+            c.closePath();
+        };
+        const vein = (c, pts, lw) => {
+            c.save();
+            c.lineJoin = 'round'; c.lineCap = 'round';
+            c.shadowColor = 'rgba(255,90,20,0.9)'; c.shadowBlur = 5;
+            c.beginPath();
+            pts.forEach((p, i) => (i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])));
+            c.strokeStyle = '#ff7a24'; c.lineWidth = lw; c.stroke();
+            c.restore();
+            c.lineJoin = 'round'; c.lineCap = 'round';
+            c.beginPath();
+            pts.forEach((p, i) => (i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])));
+            c.strokeStyle = '#ffd37a'; c.lineWidth = lw * 0.4; c.stroke();
+        };
+
+        // ROCA 60x60: grande, oscura, con vetas de brasa y la parte baja al rojo vivo
+        mk('dodge-meteor-slow', 60, 60, (c) => {
+            c.fillStyle = rad(c, 30, 30, 8, 30, 30, 30, [[0, 'rgba(255,110,30,0.45)'], [1, 'rgba(255,70,20,0)']]);
+            c.fillRect(0, 0, 60, 60);
+            const R = [22, 19, 23, 20, 23, 18, 22, 21, 19, 23, 20, 22];
+            blob(c, 30, 30, R, 0.2);
+            c.fillStyle = rad(c, 23, 21, 2, 30, 30, 27, [[0, '#7a6062'], [0.5, '#3b2c2f'], [1, '#150e10']]);
+            c.fill();
+            c.strokeStyle = 'rgba(10,5,6,0.9)'; c.lineWidth = 1.2; c.stroke();
+            vein(c, [[17, 26], [23, 31], [21, 38], [28, 43]], 1.7);
+            vein(c, [[37, 18], [35, 26], [42, 31]], 1.5);
+            vein(c, [[30, 47], [35, 41], [43, 44]], 1.3);
+            c.save();
+            blob(c, 30, 30, R, 0.2); c.clip();
+            c.fillStyle = rad(c, 30, 54, 2, 30, 54, 26, [[0, 'rgba(255,140,50,0.65)'], [1, 'rgba(255,100,30,0)']]);
+            c.fillRect(0, 0, 60, 60);
+            c.restore();
+            c.beginPath(); c.arc(30, 30, 20, Math.PI * 1.05, Math.PI * 1.55);
+            c.strokeStyle = 'rgba(255,190,130,0.45)'; c.lineWidth = 1.6; c.stroke();
+        });
+
+        // FRAGMENTO 40x40: resto incandescente, mas ligero y claro
+        mk('dodge-meteor', 40, 40, (c) => {
+            c.fillStyle = rad(c, 20, 20, 5, 20, 20, 20, [[0, 'rgba(255,170,60,0.55)'], [1, 'rgba(255,90,20,0)']]);
+            c.fillRect(0, 0, 40, 40);
+            const R = [14, 12, 15, 13, 14, 11, 15, 13];
+            blob(c, 20, 20, R, 0.5);
+            c.fillStyle = rad(c, 17, 16, 1, 20, 20, 16, [[0, '#ffe7b0'], [0.4, '#f08a2a'], [1, '#6a2410']]);
+            c.fill();
+            c.strokeStyle = 'rgba(70,20,8,0.85)'; c.lineWidth = 1; c.stroke();
+            vein(c, [[13, 22], [19, 20], [25, 25]], 1.2);
+            c.beginPath(); c.arc(16, 15, 3, 0, TAU);
+            c.fillStyle = 'rgba(255,250,220,0.55)'; c.fill();
+        });
+
+        // BRASA 32x32: pequena, casi blanca en el centro
+        mk('dodge-meteor-fast', 32, 32, (c) => {
+            c.fillStyle = rad(c, 16, 16, 3, 16, 16, 16, [[0, 'rgba(255,220,110,0.65)'], [1, 'rgba(255,120,30,0)']]);
+            c.fillRect(0, 0, 32, 32);
+            c.beginPath(); c.arc(16, 16, 10, 0, TAU);
+            c.fillStyle = rad(c, 16, 16, 1, 16, 16, 10, [[0, '#fffbe6'], [0.45, '#ffc23a'], [1, '#ff5a14']]);
+            c.fill();
+        });
+
+        // COLA DE FUEGO 32x96 (el extremo brillante abajo, pegado al meteorito)
+        mk('dodge-tail', 32, 96, (c) => {
+            poly(c, [[1, 96], [16, 0], [31, 96]]);
+            c.fillStyle = lin(c, 0, 96, 0, 0, [[0, 'rgba(255,200,100,0.9)'], [0.35, 'rgba(255,110,35,0.55)'], [1, 'rgba(255,60,10,0)']]);
+            c.fill();
+            poly(c, [[9, 96], [16, 26], [23, 96]]);
+            c.fillStyle = lin(c, 0, 96, 0, 26, [[0, 'rgba(255,245,200,0.85)'], [1, 'rgba(255,200,100,0)']]);
+            c.fill();
+        });
+
+        // LLAMA DEL SUELO 32x24 (el hitbox 22x14 queda en su parte baja)
+        mk('dodge-fire', 32, 24, (c) => {
+            c.fillStyle = rad(c, 16, 23, 2, 16, 23, 15, [[0, 'rgba(255,130,40,0.55)'], [1, 'rgba(255,80,20,0)']]);
+            c.fillRect(0, 6, 32, 18);
+            const flame = (d, tipY, c0, c1) => {
+                c.beginPath();
+                c.moveTo(d[0], 24);
+                c.quadraticCurveTo(d[1], d[2], d[3], d[4]);
+                c.quadraticCurveTo(d[5], d[6], d[7], 24);
+                c.closePath();
+                c.fillStyle = lin(c, 0, 24, 0, tipY, [[0, c0], [1, c1]]);
+                c.fill();
+            };
+            flame([3, 1, 14, 7, 8, 10, 16, 13], 8, '#ffb030', '#ff4a00');
+            flame([19, 20, 16, 25, 10, 31, 16, 29], 10, '#ffb030', '#ff4a00');
+            flame([8, 6, 12, 16, 0.5, 26, 12, 25], 0.5, '#ffc23a', '#ff3a00');
+            flame([12, 11, 15, 16, 6, 21, 15, 20], 6, '#fff0b0', '#ffb030');
+        });
+
+        // Chispas del impacto: un solo emisor reutilizado (si la API fallara, el juego sigue sin chispas)
+        this.sparkFx = null;
+        try {
+            if (this.textures.exists('dodge-spark')) {
+                this.sparkFx = this.add.particles(0, 0, 'dodge-spark', {
+                    emitting: false,
+                    speed: { min: 80, max: 260 },
+                    angle: { min: 215, max: 325 },
+                    gravityY: 700,
+                    lifespan: { min: 280, max: 520 },
+                    scale: { start: 1.1, end: 0 },
+                    alpha: { start: 1, end: 0 },
+                    blendMode: 'ADD'
+                }).setDepth(9);
+            }
+        } catch (e) { this.sparkFx = null; }
+    }
+
+    // Impacto en el suelo: destello, chispas y (solo la roca) una sacudida minima
+    impactFx(type, x) {
+        if (!this.artNew) return;
+        const gy = this.groundY;
+        const P = { rock: { n: 12, fl: 0.9, sh: true }, fragment: { n: 7, fl: 0.5, sh: false }, ember: { n: 3, fl: 0.22, sh: false } }[type]
+            || { n: 5, fl: 0.4, sh: false };
+        const fl = this.add.image(x, gy - 4, 'dodge-vglow').setDepth(7)
+            .setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.85).setScale(P.fl * 0.4);
+        this.tweens.add({ targets: fl, scale: P.fl, alpha: 0, duration: 220, ease: 'Quad.easeOut', onComplete: () => fl.destroy() });
+        if (this.sparkFx) this.sparkFx.explode(P.n, x, gy - 6);
+        if (P.sh) this.cameras.main.shake(70, 0.003);
     }
 
     // Fuego en el suelo: arde unos 3 s, parpadea al apagarse y mata si lo tocas
@@ -566,6 +731,8 @@ class DinoDodge extends Phaser.Scene {
         // Un meteorito que llega al suelo sin tocarte cuenta como esquivado
         const gy = this.groundY;
         this.meteors.getChildren().slice().forEach((m) => {
+            const tl = m.getData('tail');
+            if (tl) tl.setPosition(m.x, m.y - (m.getData('r') || 12) * 0.3);
             if (m.y >= gy - (m.getData('r') || 12)) {
                 this.score += this.points;
                 this.scoreText.setText(this.score);
