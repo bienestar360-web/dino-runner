@@ -416,6 +416,9 @@ class DinoDodge extends Phaser.Scene {
         }).setOrigin(0.5, 0).setDepth(20).setScrollFactor(0);
 
         console.log('[DODGE] Iniciado para', this.alias);
+        // Vista en primera persona (con ?view=dodge se ve el Dodge original; con ?art=old, el Dodge antiguo)
+        this.fp = !!this.artNew && new URLSearchParams(window.location.search).get('view') !== 'dodge';
+        if (this.fp) this.fpSetup();
     }
 
     onResize(size) {
@@ -446,7 +449,124 @@ class DinoDodge extends Phaser.Scene {
         return 'fragment';
     }
 
+    // ---- VISTA EN PRIMERA PERSONA (pseudo-3D): reutiliza el control, la dificultad y el die() de Dodge ----
+    // La camara son los ojos del dino: this.player.x - w/2 es la posicion lateral de la camara.
+    // Cada obstaculo tiene una distancia d (de FP.far a FP.near); q = near / d da su tamano y su altura en pantalla.
+    fpSetup() {
+        const spd = parseFloat(new URLSearchParams(window.location.search).get('spd'));
+        this.FP = { near: 3, far: 56, speed: spd > 0 ? spd : 12, stripe: 4 };
+        this.fpDist = 0;
+        this.fpObs = [];
+        // Lo que en Dodge era dino, suelo y presa se oculta: se mira desde los ojos del dino
+        [this.player, this.ground, this.groundFill, this.prey].forEach((o) => { if (o) o.setVisible(false); });
+        this.fpGfx = this.add.graphics().setDepth(5);
+        // El horizonte baja la cordillera y el volcan a una linea mas alta; onResize vuelve a llamar a esta funcion
+        this.layoutBackdrop = () => {
+            const W = this.scale.width, Hh = this.scale.height;
+            const hy = Hh * 0.42;
+            this.fpHy = hy;
+            const ks = Math.max(0.5, Math.min(1.3, hy / 300 * 0.55));
+            this.ridges.forEach((r) => r.setPosition(W / 2, hy).setScale(1, ks));
+            const vs = 0.62 * hy / 314;
+            this.fpVx = W * 0.7;
+            this.volcano.setScale(vs).setPosition(this.fpVx, hy);
+            this.crater = { x: this.fpVx, y: hy - 314 * vs, s: vs };
+            this.vglow.setPosition(this.crater.x, this.crater.y).setScale(vs * 1.6);
+        };
+        this.layoutBackdrop();
+    }
+
+    fpSpawn() {
+        const w = this.scale.width;
+        const rw = w / 2 - 20;
+        const lat = this.player.x - w / 2;
+        const type = this.meteorType();
+        const T = DODGE_TYPES[type];
+        const near = Math.random() < 0.6;
+        const X = near
+            ? Phaser.Math.Clamp(lat + Phaser.Math.Between(-140, 140), -rw, rw)
+            : Phaser.Math.Between(-rw, rw);
+        const img = this.add.image(0, 0, T.key)
+            .setOrigin(0.5, (2 * T.r + T.off) / (2 * (T.r + T.off)))
+            .setVisible(false);
+        this.fpObs.push({ img: img, type: type, T: T, X: X, d: this.FP.far });
+    }
+
+    fpUpdate(dt) {
+        const w = this.scale.width, h = this.scale.height;
+        const F = this.FP, hy = this.fpHy, cx = w / 2;
+        const rw = w / 2 - 20;
+        const yb = h - this.groundPad;            // altura del plano del jugador (por encima del recorte del movil)
+        const lat = this.player.x - cx;           // posicion lateral de la camara
+        const sNear = w * 0.0042;                 // escala del dibujo en el plano del jugador
+        const pHalf = w * 0.035;                  // mitad del ancho del jugador
+        const v = F.speed * (this.fallSpeed / 260);
+        this.fpDist += v * dt;
+        const yOf = (q) => hy + (yb - hy) * q;
+
+        // Paralaje: al moverte de lado, lo lejano casi no se mueve
+        this.ridges[0].tilePositionX = lat * 0.04;
+        this.ridges[1].tilePositionX = lat * 0.08;
+        const vx = this.fpVx - lat * 0.06;
+        this.volcano.x = vx; this.vglow.x = vx; this.crater.x = vx;
+
+        const g = this.fpGfx;
+        g.clear();
+        const quad = (x1, y1, x2, y2, x3, y3, x4, y4) => {
+            g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.lineTo(x3, y3); g.lineTo(x4, y4); g.closePath(); g.fillPath();
+        };
+        // Basalto a los lados del camino
+        g.fillStyle(0x24140f, 1);
+        g.fillRect(0, hy, w, h - hy);
+        // Franjas del camino que vienen hacia ti (alternan de color; el desplazamiento da la sensacion de velocidad)
+        const L = F.stripe, dmin = F.near * 0.4;
+        const base = Math.floor(this.fpDist / L);
+        const off = this.fpDist - base * L;
+        for (let k = -2; k * L < F.far; k++) {
+            let d1 = F.near + k * L - off;
+            let d2 = d1 + L;
+            d1 = Math.max(dmin, d1);
+            if (d2 <= dmin || d1 >= F.far) continue;
+            d2 = Math.min(F.far, d2);
+            const q1 = F.near / d1, q2 = F.near / d2;
+            const y1 = yOf(q1), y2 = yOf(q2);
+            const h1 = rw * q1, h2 = rw * q2;
+            const c1 = cx - lat * q1, c2 = cx - lat * q2;
+            const odd = ((base + k) & 1) === 1;
+            g.fillStyle(odd ? 0x3d2a1b : 0x46301f, 1);
+            quad(c1 - h1, y1, c1 + h1, y1, c2 + h2, y2, c2 - h2, y2);
+            const e1 = rw * 0.05 * q1, e2 = rw * 0.05 * q2;
+            g.fillStyle(odd ? 0xc0502a : 0x5a2214, 1);
+            quad(c1 - h1 - e1, y1, c1 - h1 + e1, y1, c2 - h2 + e2, y2, c2 - h2 - e2, y2);
+            quad(c1 + h1 - e1, y1, c1 + h1 + e1, y1, c2 + h2 + e2, y2, c2 + h2 - e2, y2);
+        }
+
+        // Obstaculos: se acercan; al llegar a tu plano, o te alcanzan o los esquivaste
+        for (let i = this.fpObs.length - 1; i >= 0; i--) {
+            const o = this.fpObs[i];
+            const T = o.T;
+            o.d -= v * T.mult * dt;
+            if (o.d <= F.near) {
+                const hit = T.r * sNear * 0.9 + pHalf;
+                if (Math.abs(o.X - lat) < hit) { this.die(); return; }
+                this.score += this.points;
+                this.scoreText.setText(this.score);
+                SoundFX.impact(o.type, Phaser.Math.Clamp((o.X - lat) / rw, -1, 1));
+                o.img.destroy();
+                this.fpObs.splice(i, 1);
+                continue;
+            }
+            const q = F.near / o.d;
+            const x = cx + (o.X - lat) * q;
+            const yg = yOf(q);
+            g.fillStyle(0x000000, 0.35);
+            g.fillEllipse(x, yg, T.r * sNear * q * 2.2, T.r * sNear * q * 0.7);
+            o.img.setVisible(true).setScale(sNear * q).setPosition(x, yg).setDepth(8 + q);
+        }
+    }
+
     spawnMeteor() {
+        if (this.fp) { this.fpSpawn(); return; }
         const w = this.scale.width;
         const type = this.meteorType();
         const T = DODGE_TYPES[type];
@@ -732,6 +852,7 @@ class DinoDodge extends Phaser.Scene {
             this.spawnEvery = Math.max(this.minSpawn, this.spawnEvery * 0.985);
         }
 
+        if (this.fp) this.fpUpdate(dt);
         // Un meteorito que llega al suelo sin tocarte cuenta como esquivado
         const gy = this.groundY;
         this.meteors.getChildren().slice().forEach((m) => {
