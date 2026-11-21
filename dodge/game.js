@@ -338,7 +338,9 @@ class DinoDodge extends Phaser.Scene {
         this.groundH = 56;
         this.paintDodgeArt();
         this.paintDodgeMeteorArt();
-        this.groundY = h - this.groundH;
+        const _pd = parseInt(new URLSearchParams(window.location.search).get('pad'), 10);
+        this.groundPad = _pd >= 0 ? _pd : 100; // margen inferior: en movil la pantalla visible corta el borde de abajo
+        this.groundY = h - this.groundH - this.groundPad;
 
         // Fondo y suelo (con ?art=old, los rectangulos provisionales de antes)
         if (this.artNew) {
@@ -375,7 +377,8 @@ class DinoDodge extends Phaser.Scene {
                 this.vglow.setPosition(this.crater.x, this.crater.y).setScale(vs * 1.6);
             };
             this.layoutBackdrop();
-            this.ground = this.add.tileSprite(w / 2, h - this.groundH / 2, 2560, this.groundH, 'dodge-ground').setDepth(5);
+            this.ground = this.add.tileSprite(w / 2, this.groundY + this.groundH / 2, 2560, this.groundH, 'dodge-ground').setDepth(5);
+            this.groundFill = this.add.rectangle(w / 2, h, 2560, this.groundPad, 0x1a0e0a).setOrigin(0.5, 1).setDepth(5);
             this.prey = this.add.image(w / 2, this.groundY, 'dodge-prey').setOrigin(0.5, 1).setDepth(5.5);
         } else {
             this.sky = this.add.rectangle(w / 2, h / 2, w, h, 0x1a1a2e).setDepth(-20);
@@ -417,10 +420,11 @@ class DinoDodge extends Phaser.Scene {
 
     onResize(size) {
         const w = size.width, h = size.height;
-        this.groundY = h - this.groundH;
+        this.groundY = h - this.groundH - this.groundPad;
         this.sky.setPosition(w / 2, h / 2);
         if (this.artNew) this.sky.setDisplaySize(w, h); else this.sky.setSize(w, h);
-        this.ground.setPosition(w / 2, h - this.groundH / 2);
+        this.ground.setPosition(w / 2, this.groundY + this.groundH / 2);
+        if (this.groundFill) this.groundFill.setPosition(w / 2, h);
         if (!this.artNew) this.ground.setSize(w, this.groundH);
         if (this.layoutBackdrop) this.layoutBackdrop();
         if (this.prey) this.prey.setPosition(w / 2, this.groundY);
