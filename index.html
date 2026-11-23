@@ -14,7 +14,6 @@
   <!-- Google AdSense -->
   <meta name="google-adsense-account" content="ca-pub-5551964617457049">
   <script async
-    data-adbreak-test="on"
     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5551964617457049"
     crossorigin="anonymous"></script>
   <script>
@@ -233,9 +232,9 @@
 
       // Timeout de seguridad: si la API no responde en 5s, Game Over directo
       const timeout = setTimeout(() => {
-        console.warn('[ADS] timeout 5s, forzando Game Over');
+        console.warn('[ADS] timeout 1.5s, forzando Game Over');
         show();
-      }, 5000);
+      }, 1500);
 
       if (typeof adBreak === 'function') {
         console.log('[ADS] adBreak next');
@@ -244,6 +243,7 @@
           name: 'game_over',
           beforeAd: () => {
             console.log('[ADS] beforeAd');
+            clearTimeout(timeout);
             try {
               const sc = window.currentGame && window.currentGame.scene
                        && window.currentGame.scene.scenes && window.currentGame.scene.scenes[0];
