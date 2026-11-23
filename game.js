@@ -852,8 +852,81 @@ class DinoGame extends Phaser.Scene {
         // [ARTE-FIN] (los siguientes parches anaden aqui las demas texturas)
     }
 
+    // Volcanes estilo Mountain (cono con lava, resplandor y humo) para el fondo; solo aspecto
+    paintMountainVolcanoes() {
+        if (!this.artNew) return;
+        const TAU = Math.PI * 2;
+        const make = (key, W, H, hw, tw, cone) => {
+            if (this.textures.exists(key)) this.textures.remove(key);
+            const tex = this.textures.createCanvas(key, W, H);
+            if (!tex) return;
+            const c = tex.getContext();
+            c.lineJoin = 'round'; c.lineCap = 'round';
+            const cx = W / 2, yb = H, top = H - cone;
+            const left = [], right = [];
+            for (let k = 0; k <= 10; k++) {
+                const u = k / 10, y = top + 4 + u * (yb - top - 4);
+                const x = tw + (hw - tw) * Math.pow(u, 0.75);
+                left.push([cx - x, y]); right.push([cx + x, y]);
+            }
+            // silueta con cresta de crater
+            c.beginPath();
+            c.moveTo(cx - tw, top); c.lineTo(cx - tw * 0.45, top + 5);
+            c.lineTo(cx + tw * 0.45, top + 5); c.lineTo(cx + tw, top);
+            right.forEach((p) => c.lineTo(p[0], p[1]));
+            for (let k = left.length - 1; k >= 0; k--) c.lineTo(left[k][0], left[k][1]);
+            c.closePath();
+            const g = c.createLinearGradient(0, top, 0, yb);
+            g.addColorStop(0, '#4a2848'); g.addColorStop(1, '#8a3a30');
+            c.fillStyle = g; c.fill();
+            // luz desde arriba a la izquierda: flanco izquierdo claro, derecho oscuro
+            c.save(); c.clip();
+            c.fillStyle = 'rgba(255,255,255,0.10)'; c.fillRect(cx - hw - 6, top - 10, hw + 6, cone + 20);
+            c.fillStyle = 'rgba(0,0,0,0.20)'; c.fillRect(cx, top - 10, hw + 6, cone + 20);
+            c.restore();
+            c.beginPath();
+            left.forEach((p, k) => (k ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])));
+            c.strokeStyle = 'rgba(255,255,255,0.28)'; c.lineWidth = 1.5; c.stroke();
+            // coladas de lava
+            [[-1, 0.8], [1, 0.55]].forEach((sd) => {
+                const pts = [];
+                for (let k = 0; k <= 10; k++) {
+                    const u = k / 10;
+                    pts.push([cx + sd[0] * (tw * 0.5 + u * hw * 0.5) + Math.sin(u * 7 + sd[0]) * 4, top + 4 + u * sd[1] * (yb - top)]);
+                }
+                [['rgba(255,90,20,0.30)', 5], ['rgba(255,200,90,0.80)', 2]].forEach((st) => {
+                    c.beginPath();
+                    pts.forEach((p, k) => (k ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])));
+                    c.strokeStyle = st[0]; c.lineWidth = st[1]; c.stroke();
+                });
+            });
+            // resplandor del crater
+            const gx = cx, gy = top + 3, gr = 100;
+            const rg = c.createRadialGradient(gx, gy, 2, gx, gy, gr);
+            rg.addColorStop(0, 'rgba(255,205,100,0.80)');
+            rg.addColorStop(0.35, 'rgba(255,110,30,0.40)');
+            rg.addColorStop(1, 'rgba(255,60,20,0)');
+            c.fillStyle = rg; c.fillRect(gx - gr, gy - gr, gr * 2, gr * 2);
+            // columna de humo
+            for (let j = 0; j < 9; j++) {
+                const f = j / 9;
+                const px = gx + Math.pow(j, 1.6) * 2.2 + Math.sin(j * 1.7 + cx) * 4;
+                const py = gy - 6 - j * 10.7;
+                const r = 7 + j * 4.3;
+                if (py - r < 2) break;
+                c.beginPath(); c.arc(px, py, r, 0, TAU);
+                c.fillStyle = 'rgba(42,28,38,' + ((0.55 - 0.45 * f) * 0.9) + ')';
+                c.fill();
+            }
+            tex.refresh();
+        };
+        make('mvol_a', 320, 420, 105, 13, 250);
+        make('mvol_b', 260, 360, 85, 11, 200);
+    }
+
     create() {
         this.paintRunnerArt();
+        this.paintMountainVolcanoes();
 
         // Textura procedural del piso (rocas repetibles)
         if (!this.textures.exists('groundTile')) {
@@ -896,6 +969,9 @@ class DinoGame extends Phaser.Scene {
         document.addEventListener('visibilitychange', this.boundVisibilityHandler);
         this.events.once('shutdown', () => document.removeEventListener('visibilitychange', this.boundVisibilityHandler));
 
+        // groundTop se define mas abajo (suelo), pero las montanas lo necesitan antes: sin esto su y era NaN y no se dibujaban
+        this.groundOffset = this.isMobile ? 180 : 80;
+        this.groundTop = h - this.groundOffset;
         // Fondo: montañas (con arte nuevo: cielo de Flap y volcanes del valle)
         this.mountains = [];
         if (this.artNew) {
@@ -911,6 +987,17 @@ class DinoGame extends Phaser.Scene {
                 m.setData('sp', v[4]);
                 this.mountains.push(m);
             });
+            // Volcanes de Mountain, detras de los anteriores (?mv=1.4 los agranda, ?mv=0 los quita)
+            const _mv = parseFloat(new URLSearchParams(window.location.search).get('mv'));
+            const mvk = _mv >= 0 ? _mv : 1;
+            if (mvk > 0 && this.textures.exists('mvol_a')) {
+                [['mvol_b', 0.33, 0.70, 0.85, 4], ['mvol_a', 0.80, 0.80, 0.90, 6]].forEach((v) => {
+                    const m = this.add.image(w * v[1], this.groundTop + 5, v[0]);
+                    m.setOrigin(0.5, 1).setScale(v[2] * vk * mvk).setAlpha(v[3]).setDepth(-9);
+                    m.setData('sp', v[4]);
+                    this.mountains.push(m);
+                });
+            }
         } else {
             for (let i = 0; i < 3; i++) {
                 const m = this.add.image(Phaser.Math.Between(0, w), this.groundTop + 5, 'mountain');
