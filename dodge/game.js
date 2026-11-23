@@ -32,9 +32,16 @@ class DinoDodge extends Phaser.Scene {
         this.minSpawn = cfg.minSpawn;
         this.points = cfg.points;
         this.moveSpeed = 380;
-        this.spawnAcc = 0;
+        this.spawnAcc = Math.max(0, cfg.spawn - 400);
         this.elapsed = 0;
         this.targetX = null;
+        // Anti-quedarse-quieto: pasada la gracia en la misma zona, los meteoritos apuntan al dino (?idle=N ajusta)
+        const _ig = parseFloat(new URLSearchParams(window.location.search).get('idle'));
+        this.idleGrace = _ig >= 0 ? _ig : 0.4;
+        const _al = parseFloat(new URLSearchParams(window.location.search).get('lead'));
+        this.aimLead = _al > 0 ? _al : 1.3; // segundos que tarda en caer un meteorito apuntado
+        this.idleT = 0;
+        this.idleX = -9999;
         console.log('[DODGE] Modo:', this.mode, cfg);
     }
 
@@ -451,9 +458,18 @@ class DinoDodge extends Phaser.Scene {
         const type = this.meteorType();
         const T = DODGE_TYPES[type];
         const near = Math.random() < 0.6;
-        const x = near
-            ? Phaser.Math.Clamp(this.player.x + Phaser.Math.Between(-140, 140), 30, w - 30)
-            : Phaser.Math.Between(30, w - 30);
+        let _vy = Math.min(720, this.fallSpeed * T.mult * Phaser.Math.FloatBetween(0.95, 1.1));
+        const _aim = this.idleT > this.idleGrace && Math.random() < Math.min(1, 0.7 + (this.idleT - this.idleGrace) * 0.4);
+        const _lead = !_aim && this.moveDir !== 0 && Math.random() < Math.min(0.35, 0.10 + this.elapsed / 120);
+        if (_aim || _lead) _vy = Math.min(720, Math.max(_vy, (this.groundY + 40) / this.aimLead));
+        const _tHit = (this.groundY + 40) / _vy;
+        const x = _aim
+            ? Phaser.Math.Clamp(this.player.x + Phaser.Math.Between(-14, 14), 30, w - 30)
+            : _lead
+            ? Phaser.Math.Clamp(this.player.x + this.moveDir * this.moveSpeed * _tHit * 0.8 + Phaser.Math.Between(-20, 20), 30, w - 30)
+            : near
+                ? Phaser.Math.Clamp(this.player.x + Phaser.Math.Between(-140, 140), 30, w - 30)
+                : Phaser.Math.Between(30, w - 30);
         // Se crea desde el grupo: anadir un sprite ya configurado reiniciaria su velocidad
         const m = this.meteors.create(x, -40, T.key);
         m.setDepth(8);
@@ -461,7 +477,7 @@ class DinoDodge extends Phaser.Scene {
         m.setData('r', T.r);
         m.body.setAllowGravity(false);
         m.body.setCircle(T.r, T.off, T.off);
-        m.setVelocityY(Math.min(720, this.fallSpeed * T.mult * Phaser.Math.FloatBetween(0.95, 1.1)));
+        m.setVelocityY(_vy);
         m.setAngularVelocity(T.spin ? Phaser.Math.Between(-T.spin, T.spin) : 0);
         if (this.artNew) {
             // Cola de fuego que acompana la caida (no gira con el meteorito)
@@ -691,6 +707,8 @@ class DinoDodge extends Phaser.Scene {
         }
         this.player.x = Phaser.Math.Clamp(this.player.x, 20, w - 20);
         this.moveDir = dir;
+        if (Math.abs(this.player.x - this.idleX) > 60) { this.idleX = this.player.x; this.idleT = 0; }
+        else this.idleT += dt;
 
         // Aspecto del dino: patas al caminar y mira hacia donde va (el hitbox no cambia)
         if (this.artNew) {
