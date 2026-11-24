@@ -8,7 +8,7 @@ const DODGE_TYPES = {
 
 // Rush: piedras como obstaculo y coleccionables (carne, ambar, cristal azul)
 const RUSH_STONE = { mult: 1.0, r: 16 };   // piedra que viene por el camino
-const RUSH_MEAT_POINTS = 5;                // puntos por carne (se multiplican en modo leyenda)
+const RUSH_MEAT_POINTS = 10;               // puntos por carne (se multiplican en modo leyenda)
 const RUSH_POWER_SECS = 8;                 // duracion del ambar y del cristal
 
 class DinoDodge extends Phaser.Scene {
@@ -844,10 +844,17 @@ class DinoDodge extends Phaser.Scene {
             it.d -= v * dt;
             if (magnet) it.X += (lat - it.X) * Math.min(1, 3 * dt);
             if (it.d <= F.near) {
-                if (Math.abs(it.X - lat) < pHalf + 20 * sNear) {
+                if (Math.abs(it.X - lat) < pHalf + 30 * sNear) {
                     if (it.kind === 'meat') {
-                        this.score += RUSH_MEAT_POINTS * this.points;
+                        const gain = RUSH_MEAT_POINTS * this.points;
+                        this.score += gain;
                         this.scoreText.setText(this.score);
+                        const pop = this.add.text(cx + (it.X - lat), yOf(1) - 70, '+' + gain, {
+                            fontFamily: 'monospace', fontSize: '30px', fontStyle: 'bold',
+                            color: '#ffd54a', stroke: '#000000', strokeThickness: 5
+                        }).setOrigin(0.5).setDepth(30);
+                        this.tweens.add({ targets: pop, y: pop.y - 80, alpha: 0, duration: 800, onComplete: () => pop.destroy() });
+                        this.tweens.add({ targets: this.scoreText, scale: 1.35, duration: 90, yoyo: true });
                         SoundFX.play(880, 0.05, 'sine', 0.10); SoundFX.play(1180, 0.06, 'sine', 0.11, 0.05); SoundFX.play(1560, 0.10, 'sine', 0.12, 0.10);
                     } else if (it.kind === 'amber') {
                         this.ghostEnd = this.elapsed + RUSH_POWER_SECS;
