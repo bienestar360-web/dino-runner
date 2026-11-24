@@ -6,6 +6,11 @@ const DODGE_TYPES = {
     ember:    { key: 'dodge-meteor-fast', mult: 1.9,  r: 9,  off: 7, spin: 0,   fire: 0 }
 };
 
+// Rush: piedras como obstaculo y coleccionables (carne, ambar, cristal azul)
+const RUSH_STONE = { mult: 1.0, r: 16 };   // piedra que viene por el camino
+const RUSH_MEAT_POINTS = 5;                // puntos por carne (se multiplican en modo leyenda)
+const RUSH_POWER_SECS = 8;                 // duracion del ambar y del cristal
+
 class DinoDodge extends Phaser.Scene {
     constructor(alias) { super('DinoDodge'); this.alias = alias || 'Jugador_0000'; }
 
@@ -498,6 +503,12 @@ class DinoDodge extends Phaser.Scene {
         // Lo que en Dodge era dino, suelo y presa se oculta: se mira desde los ojos del dino
         [this.player, this.ground, this.groundFill, this.prey].forEach((o) => { if (o) o.setVisible(false); });
         this.fpGfx = this.add.graphics().setDepth(5);
+        this.paintRushItems();
+        this.fpItems = [];
+        this.itemT = 1.5;          // segundos hasta el primer coleccionable
+        this.ghostEnd = 0;         // ambar: invencible hasta este this.elapsed
+        this.magnetEnd = 0;        // cristal: iman hasta este this.elapsed
+        this.fpHud = this.add.graphics().setDepth(19);
         // El horizonte baja la cordillera y el volcan a una linea mas alta; onResize vuelve a llamar a esta funcion
         this.layoutBackdrop = () => {
             const W = this.scale.width, Hh = this.scale.height;
@@ -525,11 +536,230 @@ class DinoDodge extends Phaser.Scene {
         try { SoundFX.play(520, 0.12, 'sine', 0.06); } catch (e) {}
     }
 
+    // Texturas 40x40 de Rush con el mismo arte del runner: piedra (obstaculo), carne, ambar y cristal azul
+    paintRushItems() {
+        const TAU = Math.PI * 2;
+        const mk = (key, tw, th, fn) => {
+            if (this.textures.exists(key)) this.textures.remove(key);
+            const tex = this.textures.createCanvas(key, tw, th);
+            if (!tex) return;
+            fn(tex.getContext());
+            tex.refresh();
+        };
+        const lin = (c, x0, y0, x1, y1, st) => {
+            const g = c.createLinearGradient(x0, y0, x1, y1);
+            st.forEach((q) => g.addColorStop(q[0], q[1]));
+            return g;
+        };
+        const rad = (c, x0, y0, r0, x1, y1, r1, st) => {
+            const g = c.createRadialGradient(x0, y0, r0, x1, y1, r1);
+            st.forEach((q) => g.addColorStop(q[0], q[1]));
+            return g;
+        };
+        const poly = (c, pts) => {
+            c.beginPath();
+            pts.forEach((p, i) => (i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])));
+            c.closePath();
+        };
+        const line = (c, x0, y0, x1, y1, col, lw) => {
+            c.beginPath(); c.moveTo(x0, y0); c.lineTo(x1, y1);
+            c.strokeStyle = col; c.lineWidth = lw; c.stroke();
+        };
+        const dot = (c, x, y, r, fill) => {
+            c.beginPath(); c.arc(x, y, r, 0, TAU); c.fillStyle = fill; c.fill();
+        };
+
+        // ---------- PIEDRA 40x40 (reemplaza al hongo que camina; se desliza por el camino) ----------
+        mk('rush-stone', 40, 40, (c) => {
+            c.lineJoin = 'round';
+            const body = [[2, 40], [1, 29], [5, 19], [12, 10], [22, 5], [31, 9], [37, 19], [39, 30], [38, 40]];
+            poly(c, body);
+            c.fillStyle = rad(c, 14, 14, 2, 20, 24, 28, [[0, '#c4c4cc'], [0.5, '#80808a'], [1, '#3a3a44']]);
+            c.fill();
+            c.save();
+            poly(c, body);
+            c.clip();
+            // cara iluminada (arriba-izquierda) y cara en sombra (abajo-derecha)
+            poly(c, [[5, 19], [12, 10], [22, 5], [20, 15], [10, 20]]);
+            c.fillStyle = 'rgba(255,255,255,0.25)'; c.fill();
+            poly(c, [[39, 30], [38, 40], [20, 40], [28, 25]]);
+            c.fillStyle = 'rgba(0,0,0,0.30)'; c.fill();
+            c.fillStyle = lin(c, 0, 32, 0, 40, [[0, 'rgba(0,0,0,0)'], [1, 'rgba(0,0,0,0.35)']]);
+            c.fillRect(0, 32, 40, 8);
+            // grietas con borde de luz
+            [[[17, 15], [20, 22], [16, 28], [19, 34]], [[30, 18], [28, 25], [31, 30]]].forEach((pts) => {
+                [[1, 'rgba(255,255,255,0.18)'], [0, 'rgba(0,0,0,0.5)']].forEach((o) => {
+                    c.beginPath();
+                    pts.forEach((p, i) => (i ? c.lineTo(p[0] + o[0], p[1]) : c.moveTo(p[0] + o[0], p[1])));
+                    c.strokeStyle = o[1]; c.lineWidth = 1; c.stroke();
+                });
+            });
+            // motas (deterministas)
+            for (let i = 0; i < 16; i++) {
+                const x = 4 + (i * 13) % 32, y = 12 + (i * 7) % 26;
+                c.fillStyle = i % 2 ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.16)';
+                c.fillRect(x, y, 1.5, 1.5);
+            }
+            c.restore();
+            poly(c, body);
+            c.strokeStyle = 'rgba(25,25,32,0.85)'; c.lineWidth = 1.2; c.stroke();
+            c.beginPath(); c.moveTo(5, 19); c.lineTo(12, 10); c.lineTo(22, 5);
+            c.strokeStyle = 'rgba(255,255,255,0.55)'; c.lineWidth = 1.2; c.stroke();
+        });
+
+        // ---------- CARNE 40x40 (muslo asado con hueso) ----------
+        mk('rush-meat', 40, 40, (c) => {
+            c.lineJoin = 'round';
+            c.lineCap = 'round';
+            const OUT = 'rgba(60,15,10,0.9)';
+            // hueso
+            line(c, 12, 28, 6.5, 33.5, OUT, 7);
+            line(c, 12, 28, 6.5, 33.5, '#f3ecd6', 5);
+            dot(c, 3.6, 32.8, 3.8, OUT); dot(c, 6.6, 36.2, 3.8, OUT);
+            dot(c, 3.6, 32.8, 3.1, '#f3ecd6'); dot(c, 6.6, 36.2, 3.1, '#e6dcc0');
+            line(c, 10.6, 27.2, 7, 31, 'rgba(255,255,255,0.7)', 1.2);
+            // carne
+            const meat = () => {
+                c.beginPath();
+                c.moveTo(13, 27);
+                c.bezierCurveTo(5, 20, 8, 6, 22, 4);
+                c.bezierCurveTo(34, 3, 38, 14, 33, 22);
+                c.bezierCurveTo(29, 29, 20, 31, 13, 27);
+                c.closePath();
+            };
+            meat();
+            c.fillStyle = rad(c, 17, 11, 2, 24, 18, 22, [[0, '#f0a070'], [0.35, '#c8553a'], [0.75, '#8b2a20'], [1, '#5a1a1a']]);
+            c.fill();
+            c.save();
+            meat(); c.clip();
+            c.fillStyle = rad(c, 36, 30, 2, 36, 30, 20, [[0, 'rgba(30,5,5,0.55)'], [1, 'rgba(30,5,5,0)']]);
+            c.fillRect(0, 0, 40, 40);
+            [[[14, 12], [19, 10], [25, 12]], [[12, 18], [19, 16], [27, 19]], [[18, 24], [24, 22], [30, 23]]].forEach((pts) => {
+                c.beginPath(); c.moveTo(pts[0][0], pts[0][1]);
+                c.quadraticCurveTo(pts[1][0], pts[1][1], pts[2][0], pts[2][1]);
+                c.strokeStyle = 'rgba(255,205,175,0.28)'; c.lineWidth = 1.2; c.stroke();
+            });
+            c.restore();
+            // brillo
+            c.beginPath(); c.ellipse(16.5, 10.5, 6, 2.8, -0.5, 0, TAU);
+            c.fillStyle = 'rgba(255,225,195,0.55)'; c.fill();
+            dot(c, 14, 8.5, 1.2, 'rgba(255,255,255,0.85)');
+            meat();
+            c.strokeStyle = OUT; c.lineWidth = 1.2; c.stroke();
+            // corte donde entra el hueso
+            c.beginPath(); c.ellipse(12.6, 27.4, 3.6, 2.2, 0.8, 0, TAU);
+            c.fillStyle = '#e9a79a'; c.fill();
+            c.strokeStyle = OUT; c.lineWidth = 0.9; c.stroke();
+        });
+
+        // ---------- AMBAR 40x40 (reemplaza a la estrella: gota dorada con un insecto fosil) ----------
+        mk('rush-amber', 40, 40, (c) => {
+            c.lineJoin = 'round';
+            c.lineCap = 'round';
+            c.fillStyle = rad(c, 20, 22, 6, 20, 22, 21, [[0, 'rgba(255,220,90,0.55)'], [1, 'rgba(255,200,60,0)']]);
+            c.fillRect(0, 0, 40, 40);
+            const drop = () => {
+                c.beginPath();
+                c.moveTo(20, 3);
+                c.bezierCurveTo(26, 12, 34, 18, 34, 26);
+                c.bezierCurveTo(34, 34, 27, 38, 20, 38);
+                c.bezierCurveTo(13, 38, 6, 34, 6, 26);
+                c.bezierCurveTo(6, 18, 14, 12, 20, 3);
+                c.closePath();
+            };
+            drop();
+            c.fillStyle = rad(c, 15, 15, 2, 20, 24, 20, [[0, '#fff3b0'], [0.35, '#ffc61a'], [0.75, '#d9820f'], [1, '#8a4a06']]);
+            c.fill();
+            c.save();
+            drop(); c.clip();
+            // insecto fosil
+            c.fillStyle = 'rgba(70,35,5,0.8)';
+            c.beginPath(); c.ellipse(20, 28, 2.6, 5, 0, 0, TAU); c.fill();
+            c.beginPath(); c.ellipse(20, 21.5, 2, 2, 0, 0, TAU); c.fill();
+            c.beginPath(); c.ellipse(15.2, 26, 4.6, 2, -0.6, 0, TAU); c.fill();
+            c.beginPath(); c.ellipse(24.8, 26, 4.6, 2, 0.6, 0, TAU); c.fill();
+            line(c, 18, 29, 13, 32.5, 'rgba(70,35,5,0.7)', 0.9);
+            line(c, 22, 29, 27, 32.5, 'rgba(70,35,5,0.7)', 0.9);
+            line(c, 19.3, 20, 17, 17.5, 'rgba(70,35,5,0.7)', 0.8);
+            line(c, 20.7, 20, 23, 17.5, 'rgba(70,35,5,0.7)', 0.8);
+            dot(c, 24, 12, 1, 'rgba(255,255,255,0.5)');
+            dot(c, 27, 31, 0.8, 'rgba(255,255,255,0.45)');
+            c.restore();
+            // brillos y borde
+            c.beginPath(); c.ellipse(13.5, 17, 2.6, 6.5, 0.45, 0, TAU);
+            c.fillStyle = 'rgba(255,255,255,0.55)'; c.fill();
+            dot(c, 12, 12.5, 1.4, 'rgba(255,255,255,0.85)');
+            drop();
+            c.strokeStyle = 'rgba(110,60,5,0.9)'; c.lineWidth = 1.2; c.stroke();
+        });
+
+        // ---------- CRISTAL DEL METEORITO 40x40 (reemplaza al iman: fragmento azul que atrae) ----------
+        mk('rush-crystal', 40, 40, (c) => {
+            c.lineJoin = 'round';
+            c.lineCap = 'round';
+            const OUT = 'rgba(8,25,70,0.9)';
+            // resplandor
+            c.fillStyle = rad(c, 20, 19, 4, 20, 19, 20, [[0, 'rgba(110,200,255,0.55)'], [1, 'rgba(60,150,255,0)']]);
+            c.fillRect(0, 0, 40, 40);
+            // roca del meteorito con brasas
+            poly(c, [[3, 37], [7, 30], [15, 32], [24, 29], [32, 31], [37, 37], [31, 39.5], [9, 39.5]]);
+            c.fillStyle = lin(c, 0, 29, 0, 40, [[0, '#5a4a55'], [1, '#231a22']]);
+            c.fill();
+            c.strokeStyle = 'rgba(15,8,15,0.9)'; c.lineWidth = 1; c.stroke();
+            line(c, 8, 31.2, 14, 33, 'rgba(255,255,255,0.18)', 1);
+            dot(c, 12, 36, 1, '#ff9a40'); dot(c, 29, 35.5, 0.9, '#ff9a40');
+            // cristales pequenos
+            const small = (pts, a, b) => {
+                poly(c, pts);
+                c.fillStyle = lin(c, 0, 14, 0, 32, [[0, a], [1, b]]);
+                c.fill(); c.strokeStyle = OUT; c.lineWidth = 0.9; c.stroke();
+            };
+            small([[6, 23], [9.5, 15], [13, 23], [12, 32], [5.5, 32]], '#8fd4ff', '#2468b8');
+            small([[28, 25], [32, 18], [36, 25], [35, 32], [28, 32]], '#7cc4f5', '#1d5aa8');
+            // cristal principal con dos caras
+            poly(c, [[20, 2], [13, 9], [14, 31], [20, 31]]);
+            c.fillStyle = lin(c, 13, 2, 20, 31, [[0, '#c4ecff'], [0.5, '#5dade2'], [1, '#2368c0']]);
+            c.fill();
+            poly(c, [[20, 2], [27, 9], [26, 31], [20, 31]]);
+            c.fillStyle = lin(c, 20, 2, 27, 31, [[0, '#4a9be0'], [1, '#12388a']]);
+            c.fill();
+            poly(c, [[20, 2], [27, 9], [26, 31], [14, 31], [13, 9]]);
+            c.strokeStyle = OUT; c.lineWidth = 1.1; c.stroke();
+            line(c, 20, 2.5, 20, 30.5, 'rgba(255,255,255,0.45)', 0.9);
+            line(c, 15.5, 11, 15.8, 26, 'rgba(255,255,255,0.55)', 1.2);
+            // destellos (la atraccion)
+            [[7, 8], [33, 11]].forEach((p) => {
+                line(c, p[0] - 3, p[1], p[0] + 3, p[1], 'rgba(255,255,255,0.9)', 1);
+                line(c, p[0], p[1] - 3, p[0], p[1] + 3, 'rgba(255,255,255,0.9)', 1);
+            });
+        });
+    }
+
+    // Coleccionable: carne (la mas comun), ambar o cristal. No se pone encima de un obstaculo.
+    fpSpawnItem() {
+        const w = this.scale.width;
+        const rw = w / 2 - 20;
+        const lat = this.player.x - w / 2;
+        const r = Math.random();
+        const kind = r < 0.80 ? 'meat' : (r < 0.90 ? 'amber' : 'crystal');
+        const key = { meat: 'rush-meat', amber: 'rush-amber', crystal: 'rush-crystal' }[kind];
+        let X = Math.random() < 0.6
+            ? Phaser.Math.Clamp(lat + Phaser.Math.Between(-160, 160), -rw, rw)
+            : Phaser.Math.Between(-rw, rw);
+        for (let t = 0; t < 4; t++) {
+            const clash = this.fpObs.some((o) => Math.abs(o.d - this.FP.far) < 6 && Math.abs(o.X - X) < (o.half || 40) + 40);
+            if (!clash) break;
+            X = Phaser.Math.Between(-rw, rw);
+        }
+        const img = this.add.image(0, 0, key).setOrigin(0.5, 1).setVisible(false);
+        this.fpItems.push({ img: img, kind: kind, X: X, d: this.FP.far, ph: Math.random() * 6 });
+    }
+
     fpSpawn() {
         const w = this.scale.width;
         const rw = w / 2 - 20;
         const lat = this.player.x - w / 2;
-        // Barrera baja (se salta o se rodea): aparece pasados FP.bar segundos y cada vez mas
+        // Tronco bajo (se salta o se rodea): aparece pasados FP.bar segundos y cada vez mas
         if (this.elapsed > this.FP.bar && Math.random() < Math.min(0.28, 0.10 + (this.elapsed - this.FP.bar) / 300)) {
             const half = rw * Phaser.Math.FloatBetween(0.18, 0.32);
             const bx = Phaser.Math.Clamp(lat + Phaser.Math.Between(-120, 120), -rw + half, rw - half);
@@ -537,16 +767,13 @@ class DinoDodge extends Phaser.Scene {
             this.fpObs.push({ img: bimg, type: 'barrier', T: { mult: 1.0, r: 0 }, X: bx, d: this.FP.far, half: half, low: true });
             return;
         }
-        const type = this.meteorType();
-        const T = DODGE_TYPES[type];
+        // Piedra (no se puede saltar: hay que rodearla)
         const near = Math.random() < 0.6;
         const X = near
             ? Phaser.Math.Clamp(lat + Phaser.Math.Between(-140, 140), -rw, rw)
             : Phaser.Math.Between(-rw, rw);
-        const img = this.add.image(0, 0, T.key)
-            .setOrigin(0.5, (2 * T.r + T.off) / (2 * (T.r + T.off)))
-            .setVisible(false);
-        this.fpObs.push({ img: img, type: type, T: T, X: X, d: this.FP.far });
+        const img = this.add.image(0, 0, 'rush-stone').setOrigin(0.5, 1).setVisible(false);
+        this.fpObs.push({ img: img, type: 'stone', T: RUSH_STONE, X: X, d: this.FP.far });
     }
 
     fpUpdate(dt) {
@@ -606,21 +833,63 @@ class DinoDodge extends Phaser.Scene {
             quad(c1 + h1 - e1, y1, c1 + h1 + e1, y1, c2 + h2 + e2, y2, c2 + h2 - e2, y2);
         }
 
-        // Obstaculos: se acercan; al llegar a tu plano, o te alcanzan o los esquivaste
+        const ghost = this.elapsed < this.ghostEnd;     // ambar activo
+        const magnet = this.elapsed < this.magnetEnd;   // cristal activo
+
+        // Coleccionables: vienen por el camino; el cristal los atrae hacia ti
+        this.itemT -= dt;
+        if (this.itemT <= 0) { this.fpSpawnItem(); this.itemT = Phaser.Math.FloatBetween(0.8, 1.5); }
+        for (let i = this.fpItems.length - 1; i >= 0; i--) {
+            const it = this.fpItems[i];
+            it.d -= v * dt;
+            if (magnet) it.X += (lat - it.X) * Math.min(1, 3 * dt);
+            if (it.d <= F.near) {
+                if (Math.abs(it.X - lat) < pHalf + 20 * sNear) {
+                    if (it.kind === 'meat') {
+                        this.score += RUSH_MEAT_POINTS * this.points;
+                        this.scoreText.setText(this.score);
+                        SoundFX.play(880, 0.05, 'sine', 0.10); SoundFX.play(1180, 0.06, 'sine', 0.11, 0.05); SoundFX.play(1560, 0.10, 'sine', 0.12, 0.10);
+                    } else if (it.kind === 'amber') {
+                        this.ghostEnd = this.elapsed + RUSH_POWER_SECS;
+                        this.cameras.main.flash(180, 255, 200, 80);
+                        SoundFX.play(600, 0.10, 'sine', 0.10); SoundFX.play(900, 0.10, 'sine', 0.10, 0.08); SoundFX.play(1200, 0.15, 'sine', 0.10, 0.16);
+                    } else {
+                        this.magnetEnd = this.elapsed + RUSH_POWER_SECS;
+                        this.cameras.main.flash(180, 100, 200, 255);
+                        SoundFX.play(600, 0.10, 'sine', 0.10); SoundFX.play(900, 0.10, 'sine', 0.10, 0.08); SoundFX.play(1200, 0.15, 'sine', 0.10, 0.16);
+                    }
+                }
+                it.img.destroy();
+                this.fpItems.splice(i, 1);
+                continue;
+            }
+            const q = F.near / it.d;
+            const x = cx + (it.X - lat) * q;
+            const yg = yOf(q);
+            const lift = (10 + 3 * Math.sin(this.elapsed * 5 + it.ph)) * sNear * q;   // flotan sobre el camino
+            g.fillStyle(0x000000, 0.30);
+            g.fillEllipse(x, yg, 18 * sNear * q * 1.6, 18 * sNear * q * 0.5);
+            it.img.setVisible(true).setScale(sNear * q).setPosition(x, yg - lift).setDepth(8 + q);
+        }
+
+        // Obstaculos (piedras y troncos): se acercan; al llegar a tu plano, o te alcanzan o los esquivaste.
+        // Con el ambar activo los atraviesas sin morir.
         for (let i = this.fpObs.length - 1; i >= 0; i--) {
             const o = this.fpObs[i];
             const T = o.T;
             o.d -= v * T.mult * dt;
             if (o.d <= F.near) {
-                if (o.low) {
-                    if (Math.abs(o.X - lat) < o.half + pHalf && this.camH < 42 * kj) { this.die(); return; }
-                } else {
-                    const hit = T.r * sNear * 0.9 + pHalf;
-                    if (Math.abs(o.X - lat) < hit) { this.die(); return; }
+                if (!ghost) {
+                    if (o.low) {
+                        if (Math.abs(o.X - lat) < o.half + pHalf && this.camH < 42 * kj) { this.die(); return; }
+                    } else {
+                        const hit = T.r * sNear * 0.9 + pHalf;
+                        if (Math.abs(o.X - lat) < hit) { this.die(); return; }
+                    }
                 }
                 this.score += this.points;
                 this.scoreText.setText(this.score);
-                SoundFX.impact(o.low ? 'fragment' : o.type, Phaser.Math.Clamp((o.X - lat) / rw, -1, 1));
+                SoundFX.impact(o.low ? 'fragment' : 'rock', Phaser.Math.Clamp((o.X - lat) / rw, -1, 1));
                 o.img.destroy();
                 this.fpObs.splice(i, 1);
                 continue;
@@ -631,13 +900,26 @@ class DinoDodge extends Phaser.Scene {
             if (o.low) {
                 g.fillStyle(0x000000, 0.35);
                 g.fillEllipse(x, yg, o.half * 2 * q, o.half * 0.25 * q);
-                o.img.setVisible(true).setScale(o.half * 2 * q / 200, 42 * kj * q / 44).setPosition(x, yg).setDepth(8 + q);
+                o.img.setVisible(true).setScale(o.half * 2 * q / 200, 42 * kj * q / 44).setPosition(x, yg).setDepth(8 + q).setAlpha(ghost ? 0.45 : 1);
                 continue;
             }
             g.fillStyle(0x000000, 0.35);
             g.fillEllipse(x, yg, T.r * sNear * q * 2.2, T.r * sNear * q * 0.7);
-            o.img.setVisible(true).setScale(sNear * q).setPosition(x, yg).setDepth(8 + q);
+            o.img.setVisible(true).setScale(sNear * q).setPosition(x, yg).setDepth(8 + q).setAlpha(ghost ? 0.45 : 1);
         }
+
+        // Barras de poder (ambar dorado, cristal azul) debajo del puntaje
+        const hud = this.fpHud;
+        hud.clear();
+        const bw = Math.min(160, w * 0.4);
+        let by = 64;
+        [[this.ghostEnd, 0xffc233], [this.magnetEnd, 0x33aaff]].forEach((p) => {
+            const rem = Phaser.Math.Clamp((p[0] - this.elapsed) / RUSH_POWER_SECS, 0, 1);
+            if (rem <= 0) return;
+            hud.fillStyle(0x000000, 0.35); hud.fillRect(w / 2 - bw / 2, by, bw, 8);
+            hud.fillStyle(p[1], 1); hud.fillRect(w / 2 - bw / 2, by, bw * rem, 8);
+            by += 14;
+        });
     }
 
     spawnMeteor() {
