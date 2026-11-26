@@ -1,0 +1,13 @@
+# MyDinoRun
+
+> Play the Dinosaur Game online for free with a global leaderboard, seven game modes, and power-ups. No downloads, no registration.
+
+## Main game
+- https://mydinorun.com/: Juego del dinosaurio online (Spanish homepage).
+- https://mydinorun.com/en/: Play the Dinosaur Game online (English homepage).
+
+## Guides (Spanish)
+- https://mydinorun.com/como-jugar-dino-runner: Cómo jugar.
+- https://mydinorun.com/ranking-dino-runner-como-escalar: Cómo escalar en el ranking.
+- https://mydinorun.com/estrategia-avanzada-5000-puntos: Estrategia avanzada.
+- https://mydinorun.com/power-ups-dino-runner: Power-ups.

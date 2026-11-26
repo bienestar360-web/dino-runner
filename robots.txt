@@ -1,3 +1,16 @@
 User-agent: *
 Allow: /
 Sitemap: https://mydinorun.com/sitemap.xml
+
+# --- AI Crawlers ---
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
