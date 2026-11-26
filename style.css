@@ -936,3 +936,8 @@ body.article-page .site-footer a { color: #4ea8ff; text-decoration: none; }
   justify-self: center;
   width: calc(50% - 6px);
 }
+
+/* selector de idioma */
+.lang-switcher{display:flex;gap:.5rem;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}
+.lang-btn{padding:.4rem .8rem;border-radius:8px;background:rgba(255,255,255,.08);color:inherit;text-decoration:none;font-size:.9rem}
+.lang-btn.active{background:rgba(255,255,255,.22);font-weight:600}
