@@ -1,26 +1,6 @@
 {
-  "outputDirectory": ".",
-  "trailingSlash": true,
   "rewrites": [
     { "source": "/en", "destination": "/en/index.html" },
     { "source": "/en/", "destination": "/en/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/",
-      "headers": [{ "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }]
-    },
-    {
-      "source": "/index.html",
-      "headers": [{ "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }]
-    },
-    {
-      "source": "/(.*).js",
-      "headers": [{ "key": "Cache-Control", "value": "no-cache, must-revalidate" }]
-    },
-    {
-      "source": "/(.*).css",
-      "headers": [{ "key": "Cache-Control", "value": "no-cache, must-revalidate" }]
-    }
   ]
 }
