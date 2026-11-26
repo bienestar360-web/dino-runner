@@ -1,0 +1,199 @@
+=== sitemap.xml local ===
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://mydinorun.com/</loc></url>
+  <url><loc>https://mydinorun.com/rush/</loc></url>
+</urlset>
+=== robots.txt local ===
+User-agent: *
+Allow: /
+Sitemap: https://mydinorun.com/sitemap.xml
+=== index.html (primeras 40 lineas) ===
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Dino Runner: juego del dinosaurio gratis online</title>
+  <meta name="description" content="Juega gratis a Dino Runner en tu navegador: corre, salta y esquiva el meteorito. Juegos de dinosaurios con ranking global y sin descargas.">
+  <link rel="canonical" href="https://mydinorun.com/">
+  <link rel="stylesheet" href="style.css?v=8">
+
+  <!-- Google AdSense -->
+  <meta name="google-adsense-account" content="ca-pub-5551964617457049">
+  <script async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5551964617457049"
+    crossorigin="anonymous"></script>
+  <script>
+    window.adsbygoogle = window.adsbygoogle || [];
+    var adBreak = adConfig = function(o) { adsbygoogle.push(o); };
+  </script>
+</head>
+<body>
+  <div id="game-container">
+    <!-- FIX canvas: contenedor exclusivo del canvas de Phaser -->
+    <div id="game-canvas"></div>
+    <div id="start-screen">
+      <h1>🦖 Dino Runner</h1>
+
+      <!-- Sección JUEGOS -->
+      <div class="start-section">
+        <h2 class="start-section-title">🎮 Juegos</h2>
+        <div class="mode-selector">
+          <button class="mode-btn active" data-mode="normal">Clásico</button>
+          <button class="mode-btn" data-mode="supervivencia">Supervivencia</button>
+          <button class="mode-btn" data-mode="carnivoro">Carnívoro</button>
+          <button class="mode-btn" data-mode="rapido">⚡ Rápido</button>
+          <button class="mode-btn" data-mode="lento">🐢 Lento</button>
+          <button class="mode-btn" data-mode="meteorito">☄️ Meteorito</button>
+=== sitemap.xml produccion: cabeceras ===
+HTTP/2 200 
+accept-ranges: bytes
+access-control-allow-origin: *
+age: 0
+cache-control: public, max-age=0, must-revalidate
+content-disposition: inline; filename="sitemap.xml"
+content-type: application/xml
+date: Tue, 24 Nov 2026 13:25:40 GMT
+etag: "d26cfbd64b685bd6f6b63d39afbe3c17"
+last-modified: Tue, 24 Nov 2026 13:25:40 GMT
+server: Vercel
+strict-transport-security: max-age=63072000
+x-vercel-cache: MISS
+x-vercel-id: cle1::rs4zh-1795526740063-d240e68afddd
+content-length: 209
+
+=== sitemap.xml produccion: inicio ===
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://mydinorun.com/</loc></url>
+  <url><loc>https://mydinorun.com/rush/</loc></url>
+</urlset>
+=== robots.txt produccion ===
+User-agent: *
+Allow: /
+Sitemap: https://mydinorun.com/sitemap.xml
+=== archivos en la raiz ===
+=
+0
+acerca-de
+ads.txt
+chrome-tmp
+como-esquivar-enemigos-dino-runner
+como-jugar-dino-runner
+config.js
+config.js.backup-definitivo-20261116-080406
+contacto
+contexto-rush.txt
+controles-dino-runner-teclado-movil
+diag.html
+diagnostico-seo.txt
+dino-runner-en-movil-problemas
+dino-runner-vs-otros-endless-runner
+dodge
+estrategia-avanzada-5000-puntos
+flap
+futuro-dino-runner-roadmap
+game.js
+game.js.backup-dino-20261120-162458
+game.js.backup-direct-url-20261118-215117
+game.js.backup-enemigos-20261120-163137
+game.js.backup-final-mode-20261118-203752
+game.js.backup-fix-url-init-20261118-214810
+game.js.backup-fondo-20261120-165108
+game.js.backup-groundtop-20261123-173953
+game.js.backup-init-mode-20261118-203506
+game.js.backup-items-20261120-163812
+game.js.backup-lento-20261118-222149
+game.js.backup-leyenda-20261118-223922
+game.js.backup-meteorito-20261118-222501
+game.js.backup-modes-20261118-202440
+game.js.backup-nubes-20261120-173232
+game.js.backup-nubes2-20261120-174045
+game.js.backup-plan-c-20261118-204354
+game.js.backup-rapido-20261118-220649
+game.js.backup-runner-20261120-160919
+game.js.backup-scene-20261123-173500
+game.js.backup-solucion-definitiva-20261118-215443
+game.js.backup-url-mode-20261118-204106
+game.js.backup-url-read-20261118-214015
+game.js.backup-valle-20261120-171430
+game.js.backup-volcanes-20261123-170359
+guias
+historia-endless-runner-genero
+index.html
+index.html.backup-active-btn-20261118-215940
+index.html.backup-adbreak-20261117-144721
+index.html.backup-adconfig-alias-20261117-150240
+index.html.backup-adsense-20261117-144157
+index.html.backup-adtest-20261117-145343
+index.html.backup-articles-20261117-225841
+index.html.backup-compartir-20261123-144939
+index.html.backup-dodge-card-20261121-115619
+index.html.backup-fix-mobile-20261117-231906
+index.html.backup-fix-movil-modo-20261119-095311
+index.html.backup-gamemode-order-20261118-202926
+index.html.backup-home-btn-20261118-221754
+index.html.backup-home-clean-20261119-105506
+index.html.backup-juegos-seccion-20261118-213535
+index.html.backup-lanzar-20261121-145059
+index.html.backup-lento-20261118-222140
+index.html.backup-leyenda-20261118-223910
+index.html.backup-limpieza-20261117-233306
+index.html.backup-limpieza-modos-20261118-210037
+index.html.backup-links-20261117-235059
+index.html.backup-mas-juegos-20261119-113007
+index.html.backup-meteorito-20261118-222450
+index.html.backup-mobile-fix-20261117-231217
+index.html.backup-modes-20261118-195948
+index.html.backup-mountain-20261119-182346
+index.html.backup-rapido-20261118-220634
+index.html.backup-restart-mode-20261118-221257
+index.html.backup-runner-20261120-160919
+index.html.backup-seo-20261123-141239
+index.html.backup-testads-20261123-145940
+index.html.backup-timeout-20261123-151029
+index.html.backup-timeout-real-20261117-150749
+index.html.backup-url-mode-20261118-204106
+lore-dino-runner-extincion
+meteorito-fondo-dino-runner
+mountain
+politica-de-privacidad
+power-ups-dino-runner
+que-es-la-carne-dino-runner
+ranking-dino-runner-como-escalar
+README.md
+robots.txt
+rush
+simerr.log
+simout.html
+sistema-puntuacion-dino-runner
+sitemap.xml
+sitemap.xml.backup-dodge-20261121-100627
+sitemap.xml.backup-dodge-20261121-101351
+sitemap.xml.backup-lanzar-20261121-145059
+sitemap.xml.backup-limpiar-modos-20261118-224618
+sitemap.xml.backup-mountain-20261119-182346
+stack-tecnico-dino-runner
+style.css
+style.css.backup-20261116-065809
+style.css.backup-articles-scroll-20261117-234439
+style.css.backup-definitivo-20261116-080406
+style.css.backup-fix-mobile-20261117-231906
+style.css.backup-gamecard-color-20261119-113354
+style.css.backup-guias-scroll-20261117-234144
+style.css.backup-homescroll-20261121-144019
+style.css.backup-hud-top-20261116-145712
+style.css.backup-hud-v7-20261116-144545
+style.css.backup-hud-v7-20261116-145344
+style.css.backup-limpieza-20261117-233246
+style.css.backup-overflow-fix-20261117-232423
+style.css.backup-overflow-fix-20261117-232703
+style.css.backup-runner-20261120-160919
+supabase.js
+supabase.js.backup-definitivo-20261116-080406
+test-sim.html
+vercel.json
