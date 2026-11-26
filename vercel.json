@@ -1,4 +1,10 @@
 {
+  "outputDirectory": ".",
+  "trailingSlash": true,
+  "rewrites": [
+    { "source": "/en", "destination": "/en/index.html" },
+    { "source": "/en/", "destination": "/en/index.html" }
+  ],
   "headers": [
     {
       "source": "/",
@@ -16,6 +22,5 @@
       "source": "/(.*).css",
       "headers": [{ "key": "Cache-Control", "value": "no-cache, must-revalidate" }]
     }
-  ],
-  "trailingSlash": true
+  ]
 }
