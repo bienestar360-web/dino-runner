@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Juego del dinosaurio en el móvil: problemas y soluciones</title>
-  <meta name="description" content="Problemas de Dino Runner en móvil: el juego no carga, el agacharse no responde, la puntuación no se guarda, lag y soluciones reales para cada caso.">
+  <meta name="description" content="Problemas de Dino Runner en móvil: el juego no carga, la puntuación no se guarda, lag y soluciones reales para cada caso.">
   <meta name="keywords" content="Dino Runner móvil, problemas Dino Runner, Dino Runner no carga">
   <link rel="canonical" href="https://mydinorun.com/dino-runner-en-movil-problemas">
   <link rel="stylesheet" href="/style.css?v=8">
@@ -67,16 +67,6 @@
 <p>El juego usa Phaser 3.80, que requiere un navegador moderno con soporte de WebGL. Navegadores muy antiguos (Android 5 o anteriores, iOS 10 o anteriores) pueden no cargar el juego.</p>
 
 <p>Para la lista completa de controles en móvil, consulta la guía de <a href="/controles-dino-runner-teclado-movil">controles de Dino Runner</a>.</p>
-
-<h2>El agacharse no responde en móvil</h2>
-
-<p>El agacharse en móvil es un deslizamiento hacia abajo, no un toque. Si tocas la pantalla esperando agacharte, el dino salta. Este es el error más común en móvil.</p>
-
-<p>Si deslizas y aun así no se agacha, las causas son:</p>
-
-<p>1. <strong>El deslizamiento es demasiado corto.</strong> El gesto necesita un recorrido mínimo. Desliza desde el centro de la pantalla hacia abajo, no un toque corto.</p>
-<p>2. <strong>El deslizamiento es demasiado lento.</strong> El juego detecta el gesto por velocidad. Si deslizas muy despacio, no lo registra.</p>
-<p>3. <strong>Estás tocando una zona no interactiva.</strong> En la versión actual, toda la pantalla es interactiva, pero si el juego está embebido en un iframe, el gesto puede no llegar.</p>
 
 <h2>La puntuación no se guarda</h2>
 
