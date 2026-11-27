@@ -4,12 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cómo esquivar obstáculos en el juego del dinosaurio</title>
-  <meta name="description" content="Guía de enemigos de Dino Runner: piedras, pterodáctilos y obstáculos. Cuándo saltar, cuándo agacharse, patrones de aparición y timing exacto.">
-  <meta name="keywords" content="esquivar enemigos Dino Runner, piedras Dino Runner, pterodáctilos Dino Runner">
+  <meta name="description" content="Guía de enemigos de Dino Runner: piedras y pterosaurios. Cómo saltarlos o pisarlos, qué pasa al chocar y cada cuánto aparecen, según el código del juego.">
+  <meta name="keywords" content="esquivar enemigos Dino Runner, piedras Dino Runner, pterosaurios (pterodáctilos) Dino Runner">
   <link rel="canonical" href="https://mydinorun.com/como-esquivar-enemigos-dino-runner">
   <link rel="stylesheet" href="/style.css?v=8">
   <meta name="google-adsense-account" content="ca-pub-5551964617457049">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5551964617457049" crossorigin="anonymous"></script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿Se puede agachar el dinosaurio en Dino Runner?", "acceptedAnswer": {"@type": "Answer", "text": "No. El único control es saltar, con la barra espaciadora o con un toque en la pantalla. Tampoco hay doble salto: solo se salta desde el suelo."}},{"@type": "Question", "name": "¿Cuántos tipos de enemigos hay en Dino Runner?", "acceptedAnswer": {"@type": "Answer", "text": "Dos: las piedras, que van por el suelo, y los pterosaurios, que vuelan por el aire. Los pterosaurios son los menos frecuentes, aproximadamente 1 de cada 7 enemigos."}},{"@type": "Question", "name": "¿Cómo se pisa a un enemigo?", "acceptedAnswer": {"@type": "Answer", "text": "Cayendo sobre él con los pies cerca de su parte superior. El enemigo desaparece, el dino rebota y ganas 100 puntos."}},{"@type": "Question", "name": "¿Qué pasa si choco con un enemigo?", "acceptedAnswer": {"@type": "Answer", "text": "Si tienes más de una vida, pierdes una y quedas invulnerable 2 segundos. Si solo te queda una, la partida termina."}}]}</script>
 </head>
 <body class="article-page">
   <header class="site-header">
@@ -22,125 +23,77 @@
   </header>
 
   <main class="article-content">
-    <h1>Cómo esquivar todos los enemigos de Dino Runner</h1>
-    
-<h1>Cómo esquivar todos los enemigos de Dino Runner</h1>
+    <h1>Cómo esquivar los enemigos de Dino Runner</h1>
 
-<p>En Dino Runner hay tres tipos de enemigos y dos formas de esquivarlos. La mayoría de jugadores solo usa el salto, y eso explica por qué mueren en el primer pterodáctilo. Esta guía desglosa cada enemigo, cuándo usar cada control y el timing que funciona en partidas reales.</p>
+    <p><strong>En Dino Runner hay dos enemigos, piedras y pterosaurios, y un solo control: saltar.</strong> Hay dos formas de superarlos: saltarlos o pisarlos cayendo sobre ellos. No existe agacharse ni deslizar. Esta guía explica cómo funciona cada enemigo según cómo está programado el juego.</p>
 
-<h2>Los 3 tipos de enemigos</h2>
+    <h2>Los 2 enemigos</h2>
 
-<p>El juego tiene tres categorías de obstáculo, y cada una exige una respuesta distinta:</p>
+    <table class="md-table">
+      <thead>
+        <tr><th>Enemigo</th><th>Dónde va</th><th>Velocidad</th><th>Cómo superarlo</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Piedra</td><td>Por el suelo</td><td>Más rápida (1,3×)</td><td>Saltar o pisar</td></tr>
+        <tr><td>Pterosaurio</td><td>En el aire, a una sola altura</td><td>Normal (1×)</td><td>Quedarte en el suelo, o pisar</td></tr>
+      </tbody>
+    </table>
 
-<table class="md-table">
-  <thead>
-    <tr>
-      <th>Enemigo</th>
-      <th>Forma</th>
-      <th>Respuesta</th>
-      <th>Altura</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Piedra</td>
-      <td>Obstáculo terrestre</td>
-      <td>Saltar</td>
-      <td>Suelo</td>
-    </tr>
-    <tr>
-      <td>Pterodáctilo</td>
-      <td>Obstáculo aéreo</td>
-      <td>Agacharse o saltar (según altura)</td>
-      <td>Variable</td>
-    </tr>
-    <tr>
-      <td>Obstáculo genérico</td>
-      <td>Bloque terrestre</td>
-      <td>Saltar</td>
-      <td>Suelo</td>
-    </tr>
-  </tbody>
-</table>
+    <p>La piedra es el enemigo habitual. El pterosaurio es menos frecuente, aproximadamente 1 de cada 7 enemigos. Vuela siempre a la misma altura media, con un ligero vaivén, y pasa por encima de la cabeza del dino cuando este corre por el suelo. Si saltas justo cuando está cerca, puedes chocar con él.</p>
 
-<p>La piedra es el enemigo más común. Aparece a ras de suelo y se esquiva saltando. El pterodáctilo aparece a dos alturas: si vuela bajo, se esquiva agachándose; si vuela alto, se esquiva saltando o simplemente corriendo por debajo. El obstáculo genérico es un bloque terrestre que se comporta como la piedra.</p>
+    <h2>Saltar o pisar</h2>
 
-<h2>Cuándo saltar y cuándo agacharse</h2>
+    <ul>
+      <li><strong>Saltar:</strong> solo funciona desde el suelo. No hay doble salto, así que no puedes corregir en el aire.</li>
+      <li><strong>Pisar:</strong> si caes sobre un enemigo con los pies cerca de su parte superior, desaparece, el dino rebota hacia arriba y ganas 100 puntos. Funciona con cualquier enemigo.</li>
+      <li><strong>Tocarlo de lado:</strong> cuenta como choque.</li>
+    </ul>
 
-<p>La regla es simple pero se incumple constantemente:</p>
+    <p>Pisar es más arriesgado que saltar, pero da puntos y un rebote que te sirve para encadenar con el siguiente enemigo. Para ver cómo se suman, consulta el <a href="/sistema-puntuacion-dino-runner">sistema de puntuación</a>.</p>
 
-<ul>
-  <li><strong>Salta cuando el obstáculo está en el suelo.</strong> Piedras y bloques.</li>
-  <li><strong>Agáchate cuando el obstáculo está a media altura.</strong> Pterodáctilos bajos.</li>
-  <li><strong>No hagas nada cuando el obstáculo está alto.</strong> Pterodáctilos altos pasan por encima del dino sin colisión.</li>
-</ul>
+    <h2>Qué pasa al chocar</h2>
 
-<p>El error más caro es saltar un pterodáctilo bajo. El salto tiene una altura fija de aproximadamente 600 ms de duración; si el ptero está a media altura, el dino sube y choca de frente. El agacharse lo deja pasar por debajo.</p>
+    <p>Si tienes más de una vida, pierdes una y quedas invulnerable 2 segundos. Si solo te queda una, la partida termina. Con el ámbar activo, los enemigos que toques se destruyen y suman 150 puntos. Más datos en la guía de <a href="/power-ups-dino-runner">power-ups</a>.</p>
 
-<p>Para el detalle de cada control por dispositivo, consulta la guía de controles de Dino Runner.</p>
+    <h2>Cada cuánto aparecen</h2>
 
-<h2>Patrones de aparición</h2>
+    <p>En el modo Clásico, el siguiente enemigo aparece entre 1,2 y 2,8 segundos después del anterior. Ese margen cambia con el modo: en Leyenda los enemigos salen el doble de seguido y todo arranca al doble de velocidad. Lo tienes comparado en los <a href="/modos-de-juego-dino-runner">modos de juego</a>.</p>
 
-<p>Los enemigos no aparecen al azar. El juego usa una función de spawn que programa el siguiente obstáculo entre 1,200 y 2,800 ms después del anterior. Esto tiene tres consecuencias prácticas:</p>
+    <h2>Consejos de timing</h2>
 
-<p>1. <strong>Nunca hay dos enemigos simultáneos en el mismo carril.</strong> El spawn es secuencial.</p>
-<p>2. <strong>El intervalo mínimo es 1,200 ms.</strong> Eso da tiempo a un salto completo (600 ms) y a aterrizar antes del siguiente.</p>
-<p>3. <strong>El intervalo máximo es 2,800 ms.</strong> En ese hueco aparecen la carne y los power-ups.</p>
+    <ul>
+      <li>Las piedras avanzan más rápido que los pterosaurios, así que calcula con más margen cuando vengan varias piedras seguidas.</li>
+      <li>Con un pterosaurio cerca, la opción más segura es no saltar y dejarlo pasar por encima.</li>
+      <li>Si saltas demasiado pronto, aterrizas justo delante del enemigo siguiente. Salta cuando la piedra ya esté cerca.</li>
+      <li>En los modos Rápido y Leyenda hay menos tiempo de reacción: practica antes en Clásico o Lento.</li>
+    </ul>
 
-<p>La siguiente tabla muestra el intervalo y lo que puedes hacer en él:</p>
+    <h2>Ejercicios para practicar</h2>
 
-<table class="md-table">
-  <thead>
-    <tr>
-      <th>Intervalo</th>
-      <th>Duración</th>
-      <th>Acción posible</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Mínimo</td>
-      <td>1,200 ms</td>
-      <td>Saltar, aterrizar, preparar el siguiente</td>
-    </tr>
-    <tr>
-      <td>Medio</td>
-      <td>~2,000 ms</td>
-      <td>Saltar, recoger carne, aterrizar</td>
-    </tr>
-    <tr>
-      <td>Máximo</td>
-      <td>2,800 ms</td>
-      <td>Saltar, recoger carne, agacharse, aterrizar</td>
-    </tr>
-  </tbody>
-</table>
+    <ol>
+      <li><strong>Solo saltos:</strong> ignora la carne y salta cada piedra, aterrizando antes de la siguiente.</li>
+      <li><strong>Pisotones:</strong> intenta pisar piedras para sentir cuándo caes en el punto correcto.</li>
+      <li><strong>Pterosaurios:</strong> cuando veas uno, resiste las ganas de saltar y déjalo pasar.</li>
+      <li><strong>Con carne:</strong> añade la recolección sin romper el ritmo del salto.</li>
+    </ol>
 
-<h2>Timing exacto</h2>
+    <h2>Preguntas rápidas</h2>
 
-<p>El timing del salto no se mide en milisegundos, se mide en distancia en pantalla. La regla que funciona:</p>
+    <h3>¿Se puede agachar el dinosaurio en Dino Runner?</h3>
+    <p>No. El único control es saltar, con la barra espaciadora o con un toque en la pantalla. Tampoco hay doble salto.</p>
 
-<ul>
-  <li><strong>Salta cuando el obstáculo esté a media pantalla.</strong> No cuando aparece, no cuando está encima.</li>
-  <li><strong>Si dudas, salta tarde.</strong> Un salto tardío aterriza antes del obstáculo; un salto temprano aterriza encima.</li>
-  <li><strong>El polvo del dino es tu referencia.</strong> Si el polvo está activo, el dino toca el suelo y puedes saltar. Si no hay polvo, está en el aire.</li>
-</ul>
+    <h3>¿Cuántos tipos de enemigos hay en Dino Runner?</h3>
+    <p>Dos: las piedras, por el suelo, y los pterosaurios, en el aire. Los pterosaurios son los menos frecuentes.</p>
 
-<p>Para el pterodáctilo bajo, la regla es la inversa: agáchate cuando el ptero esté a un tercio de pantalla. Agacharse antes no ayuda; agacharse tarde es colisión.</p>
+    <h3>¿Cómo se pisa a un enemigo?</h3>
+    <p>Cayendo sobre él con los pies cerca de su parte superior. El enemigo desaparece, el dino rebota y ganas 100 puntos.</p>
 
-<h2>Ejercicios para practicar</h2>
+    <h3>¿Qué pasa si choco con un enemigo?</h3>
+    <p>Si tienes más de una vida, pierdes una y quedas invulnerable 2 segundos. Si solo te queda una, la partida termina.</p>
 
-<p>Estos ejercicios funcionan en partidas reales y se pueden practicar en sesiones de 10 minutos:</p>
+    <p>Si es tu primera partida, empieza por la <a href="/como-jugar-dino-runner">guía para principiantes</a>. Para el detalle de cada control, consulta los <a href="/controles-dino-runner-teclado-movil">controles en teclado y móvil</a>, y para ir más allá, la <a href="/estrategia-avanzada-5000-puntos">estrategia avanzada</a>.</p>
 
-<p>1. <strong>Solo saltos (partidas 1-3):</strong> ignora la carne, ignora el score. Salta cada piedra y aterriza antes del siguiente. Objetivo: 1,000 puntos sin morir por salto temprano.</p>
-<p>2. <strong>Solo agacharse (partidas 4-6):</strong> busca pteros bajos y agáchate. Objetivo: sobrevivir 500 puntos sin usar el salto.</p>
-<p>3. <strong>Combinado (partidas 7-10):</strong> salta piedras, agáchate ante pteros bajos, ignora pteros altos. Objetivo: 2,000 puntos.</p>
-<p>4. <strong>Con carne (partidas 11+):</strong> añade recolección sin romper el timing. Objetivo: 3,000 puntos con 15+ filetes.</p>
-
-<p>Para entender el ritmo del piso y cómo anticipar enemigos con el scroll, consulta la guía de polvo y piso. Para la estrategia completa por fases, consulta la guía de estrategia avanzada. Para volver a los fundamentos, consulta la <a href="/como-jugar-dino-runner">guía para principiantes</a>.</p>
-
-<p>Esquivar no es reflejo. Es timing aprendido. Y el timing se entrena con repetición, no con suerte.</p>
-
+    <p><a href="/">Jugar a Dino Runner ahora →</a></p>
   </main>
 
   <footer class="site-footer">
