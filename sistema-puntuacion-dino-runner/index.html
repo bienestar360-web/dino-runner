@@ -4,12 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Puntuación del juego del dinosaurio: cómo se calcula</title>
-  <meta name="description" content="Sistema de puntuación de Dino Runner: +50 por carne, puntos por tiempo, power-ups y ranking global. Ejemplo de partida y cómo superar los 5,000 puntos.">
+  <meta name="description" content="Cómo se puntúa en Dino Runner: unos 45 puntos por segundo por tiempo, +50 por carne, +100 por pisotón y una vida extra cada 10 000 puntos.">
   <meta name="keywords" content="puntuación Dino Runner, puntos Dino Runner, ranking Dino Runner">
   <link rel="canonical" href="https://mydinorun.com/sistema-puntuacion-dino-runner">
   <link rel="stylesheet" href="/style.css?v=8">
   <meta name="google-adsense-account" content="ca-pub-5551964617457049">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5551964617457049" crossorigin="anonymous"></script>
+  <script type="application/ld+json">
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿Cómo se calculan los puntos en Dino Runner?", "acceptedAnswer": {"@type": "Answer", "text": "Principalmente por tiempo vivo: unos 10 puntos por unidad de velocidad y segundo, es decir, unos 45 por segundo al empezar el modo Clásico. Además hay +50 por carne, +100 por pisotón y +150 por enemigo destruido con el ámbar."}}, {"@type": "Question", "name": "¿Cuántos puntos da la carne en Dino Runner?", "acceptedAnswer": {"@type": "Answer", "text": "La carne da 50 puntos, o 100 en el modo Leyenda. Equivale a poco más de un segundo de supervivencia al empezar."}}, {"@type": "Question", "name": "¿Cada cuántos puntos se gana una vida en Dino Runner?", "acceptedAnswer": {"@type": "Answer", "text": "Cada 10 000 puntos se gana una vida extra. El marcador Próxima vida muestra cuántos puntos faltan."}}, {"@type": "Question", "name": "¿Hay multiplicadores de puntos en Dino Runner?", "acceptedAnswer": {"@type": "Answer", "text": "No hay combos ni multiplicadores. Como los puntos por tiempo dependen de la velocidad, cada segundo vale más a medida que el juego se acelera."}}]}
+  </script>
 </head>
 <body class="article-page">
   <header class="site-header">
@@ -22,87 +25,98 @@
   </header>
 
   <main class="article-content">
-    <h1>Cómo funciona el sistema de puntuación en Dino Runner</h1>
-    
-<h1>Cómo funciona el sistema de puntuación en Dino Runner</h1>
+    <h1>Puntuación del juego del dinosaurio: cómo se calcula en Dino Runner</h1>
 
-<p>La puntuación de Dino Runner no es un número arbitrario. Es la suma de tres fuentes: tiempo vivo, carne recogida y power-ups. Esta guía desglosa cada una, muestra un ejemplo de partida real y explica cómo se llega a los 5,000 puntos sin inventar mecánicas que el juego no tiene.</p>
+<p>En Dino Runner ganas puntos sobre todo por <strong>tiempo vivo</strong>. A eso se suman la carne (+50), los pisotones (+100) y los enemigos destruidos con el ámbar (+150). No hay multiplicadores ni combos, y cada 10 000 puntos ganas una vida extra.</p>
 
-<h2>Puntos por carne (+50)</h2>
+<h2>Puntos por tiempo vivo: la fuente principal</h2>
 
-<p>Cada filete recogido suma +50 puntos de forma inmediata. Es la fuente de puntos más alta por evento individual y la que más peso tiene en partidas largas. En una partida de 5,000 puntos, la carne puede representar entre el 40% y el 50% del total si se recoge con consistencia.</p>
-
-<p>La carne no se acumula entre partidas ni se gasta. Se convierte en puntos en el momento de la colisión con el sprite. Para la mecánica completa, consulta la guía de [la carne en Dino Runner](/que-es-la-carne-dino-runner).</p>
-
-<h2>Puntos por tiempo</h2>
-
-<p>El tiempo vivo suma puntos de forma pasiva. La tasa exacta no está documentada en la biblia del proyecto; lo que sí es seguro es que es constante y no depende de la carne. Es la fuente de puntos que existe incluso si el jugador no recoge nada.</p>
-
-<p>En términos prácticos: si sobrevives sin recoger carne, subes, pero despacio. Si recoges carne, subes rápido. La combinación de ambas es lo que produce puntuaciones altas.</p>
-
-<h2>Puntos por power-ups</h2>
-
-<p>Los power-ups otorgan bonificaciones puntuales de valor variable según el tipo. Son escasos y no están en el camino principal, lo que los convierte en un bonus oportunista más que en una estrategia central. No están implementados de forma masiva en la versión actual; cuando aparecen, suman.</p>
-
-<h2>Multiplicadores y combinación de puntos</h2>
-
-<p>No hay multiplicadores de puntos en Dino Runner. Ningún elemento del juego duplica o triplica la puntuación de la carne o del tiempo. El único "multiplicador" del juego es la velocidad, que aumenta con el score y actúa como multiplicador de dificultad, no de puntos.</p>
-
-<p>Esto es importante para no confundir el ritmo con la puntuación: el juego se acelera, pero los puntos por filete siguen siendo +50. Lo que cambia es el riesgo de recogerlos, no su valor.</p>
-
-<h2>Cómo superar los 5,000 puntos</h2>
-
-<p>Un ejemplo de partida real de 5,000 puntos se desglosa así:</p>
+<p>Mientras estás vivo, la partida suma unos <strong>10 puntos por la velocidad actual, cada segundo</strong>. La velocidad empieza en un valor que depende del modo y sube 0,05 por segundo. Por eso al principio sumas unos 45 puntos por segundo y, a medida que el juego se acelera, cada segundo vale más.</p>
 
 <table class="md-table">
   <thead>
-    <tr>
-      <th>Fuente</th>
-      <th>Cantidad</th>
-      <th>Puntos</th>
-    </tr>
+    <tr><th>Modo</th><th>Velocidad inicial</th><th>Puntos por segundo al empezar</th></tr>
   </thead>
   <tbody>
-    <tr>
-      <td>Carne</td>
-      <td>30 filetes</td>
-      <td>1,500</td>
-    </tr>
-    <tr>
-      <td>Tiempo vivo</td>
-      <td>~3,500 intervalos</td>
-      <td>~3,500</td>
-    </tr>
-    <tr>
-      <td>Power-ups</td>
-      <td>0-2</td>
-      <td>0-100</td>
-    </tr>
-    <tr>
-      <td>**Total**</td>
-      <td>—</td>
-      <td>**~5,000**</td>
-    </tr>
+    <tr><td>Clásico, Supervivencia y Meteorito</td><td>4,5</td><td>45</td></tr>
+    <tr><td>Rápido y Leyenda</td><td>9</td><td>90</td></tr>
+    <tr><td>Lento</td><td>2,5</td><td>25</td></tr>
+    <tr><td>Carnívoro</td><td>4,5</td><td>0: no da puntos por tiempo</td></tr>
   </tbody>
 </table>
 
-<p>La estrategia para llegar a 5,000 se resume en tres reglas:</p>
+<p>El indicador de velocidad de la esquina muestra la velocidad dividida entre 3: empieza en x1,5 en el modo Clásico y sube aproximadamente 1 cada minuto.</p>
 
-<p>1. <strong>No mueras antes de 3,000.</strong> La mayor parte de la puntuación se acumula en el Acto III-IV. Morir en el Acto I o II deja la partida en 1,000-2,000 puntos, independientemente de la carne.</p>
-<p>2. <strong>Recoge carne sin arriesgar.</strong> 30 filetes en 5,000 puntos es una media de un filete cada 166 puntos. No necesitas ser agresivo: necesitas ser consistente.</p>
-<p>3. <strong>Aprende el timing del Acto III.</strong> Entre 3,000 y 5,000 puntos, la velocidad del juego hace que los saltos sean más cortos en tiempo real. El timing que funcionaba en 1,000 puntos ya no funciona.</p>
+<h2>Cuánto tardas en llegar a cada puntuación</h2>
 
-<p>Para la estrategia completa por fases, consulta la guía de estrategia avanzada. Para el timing de cada enemigo, consulta la guía de [cómo esquivar enemigos](/como-esquivar-enemigos-dino-runner).</p>
+<p>Estimación en modo Clásico, contando solo el tiempo y sin carne ni pisotones. Son valores aproximados calculados a partir de la fórmula, no medidos en partidas.</p>
 
-<h2>El ranking global (Supabase)</h2>
+<table class="md-table">
+  <thead>
+    <tr><th>Tiempo de partida</th><th>Puntos aproximados</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>20 segundos</td><td>1 000</td></tr>
+    <tr><td>1 minuto</td><td>3 600</td></tr>
+    <tr><td>1 minuto y 20 segundos</td><td>5 000</td></tr>
+    <tr><td>2 minutos</td><td>9 000</td></tr>
+    <tr><td>2 minutos y 10 segundos</td><td>10 000</td></tr>
+  </tbody>
+</table>
 
-<p>La puntuación se guarda en un ranking global gestionado con Supabase. Al morir, la pantalla de Game Over muestra el score, la posición y el top 3. Si el score entra en el top 3, se registra con el alias del jugador.</p>
+<h2>Carne: +50 puntos</h2>
 
-<p>El ranking no mide "quién es mejor jugando": mide quién resistió más tiempo antes del impacto. Es una distinción narrativa, pero también técnica: el ranking no distingue entre partidas con mucha carne y partidas con poca carne. Solo cuenta el total.</p>
+<p>Cada filete suma 50 puntos, o 100 en el modo Leyenda. Al empezar el modo Clásico, un filete equivale a poco más de un segundo de supervivencia, pero aparecen con frecuencia: salen más de 0,7 por segundo en promedio, siempre en el aire. Recoger muchos suma, aunque el tiempo vivo sigue siendo la fuente principal. La carne es la base de la puntuación en el modo Carnívoro y no aparece en Supervivencia. Para la mecánica completa, consulta la guía de <a href="/que-es-la-carne-dino-runner">la carne en Dino Runner</a>.</p>
 
-<p>Para el funcionamiento completo del ranking, consulta la guía de [ranking de Dino Runner](/ranking-dino-runner-como-escalar). Para el sistema de alias, consulta el artículo de alias y nombres. Para volver a los fundamentos, consulta la [guía para principiantes](/como-jugar-dino-runner).</p>
+<h2>Pisotón, ámbar y vidas</h2>
 
-<p>La puntuación no es un trofeo. Es el registro de cuánto resististe. Y resistir es lo único que el juego te pide.</p>
+<table class="md-table">
+  <thead>
+    <tr><th>Evento</th><th>Puntos</th><th>Cómo ocurre</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Pisotón</td><td>+100</td><td>Caes sobre un enemigo desde arriba: lo destruyes y rebotas.</td></tr>
+    <tr><td>Enemigo con ámbar activo</td><td>+150 cada uno</td><td>Durante 10 segundos los enemigos se destruyen al tocarlos.</td></tr>
+    <tr><td>Cristal del meteorito</td><td>0</td><td>Atrae los coleccionables hacia ti durante 10 segundos.</td></tr>
+    <tr><td>Corazón</td><td>0</td><td>Suma una vida.</td></tr>
+  </tbody>
+</table>
+
+<p>Además, ganas una <strong>vida extra cada 10 000 puntos</strong>. El marcador Próxima vida de la pantalla indica cuántos puntos faltan. Más detalle en la guía de <a href="/power-ups-dino-runner">power-ups</a>.</p>
+
+<h2>Multiplicadores</h2>
+
+<p>No hay combos ni multiplicadores de puntos. Lo más parecido es la velocidad: como los puntos por tiempo dependen de ella, cada segundo de partida vale más cuanto más rápido va el juego.</p>
+
+<h2>Cómo puntúan los otros juegos</h2>
+
+<table class="md-table">
+  <thead>
+    <tr><th>Juego</th><th>Qué suma</th><th>Valor</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><a href="/flap">Dino Flap</a></td><td>Cada columna superada</td><td>1 punto (2 en Leyenda)</td></tr>
+    <tr><td><a href="/mountain">Dino Mountain Escape</a></td><td>Cada plataforma alcanzada</td><td>1 punto (2 en Leyenda)</td></tr>
+    <tr><td><a href="/dodge">Dino Dodge</a></td><td>Cada meteorito esquivado</td><td>1 punto (2 en Leyenda)</td></tr>
+    <tr><td><a href="/rush">Dino Rush</a></td><td>Cada obstáculo esquivado; la carne da 10 puntos</td><td>1 punto (2 en Leyenda)</td></tr>
+  </tbody>
+</table>
+
+<h2>El ranking global</h2>
+
+<p>Cada partida se envía a un ranking global gestionado con Supabase. Al terminar ves tu puntuación, tu posición y el top 3. El ranking no distingue de dónde vienen los puntos: solo cuenta el total. Más información en la guía del <a href="/ranking-dino-runner-como-escalar">ranking de Dino Runner</a>.</p>
+
+<h2>Preguntas frecuentes</h2>
+
+<h3>¿Cómo se calculan los puntos en Dino Runner?</h3>
+<p>Principalmente por tiempo vivo: unos 10 puntos por unidad de velocidad y segundo, es decir, unos 45 por segundo al empezar el modo Clásico. Además hay +50 por carne, +100 por pisotón y +150 por enemigo destruido con el ámbar.</p>
+<h3>¿Cuántos puntos da la carne en Dino Runner?</h3>
+<p>La carne da 50 puntos, o 100 en el modo Leyenda. Equivale a poco más de un segundo de supervivencia al empezar.</p>
+<h3>¿Cada cuántos puntos se gana una vida en Dino Runner?</h3>
+<p>Cada 10 000 puntos se gana una vida extra. El marcador Próxima vida muestra cuántos puntos faltan.</p>
+<h3>¿Hay multiplicadores de puntos en Dino Runner?</h3>
+<p>No hay combos ni multiplicadores. Como los puntos por tiempo dependen de la velocidad, cada segundo vale más a medida que el juego se acelera.</p>
+<p>Para empezar desde cero, consulta la <a href="/como-jugar-dino-runner">guía para principiantes</a> y la de <a href="/controles-dino-runner-teclado-movil">controles</a>. <a href="/">Jugar a Dino Runner ahora →</a></p>
 
   </main>
 
